@@ -1,2 +1,1 @@
-# myGBhomeworks
-here I will allocate my home works to check by Geek Brains instructors. For every lesson I will create a separate branch.
+This repository is created for Geek Brains home works reporting. A new branch will be created for each homework
