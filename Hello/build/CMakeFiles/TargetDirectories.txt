@@ -1,0 +1,3 @@
+C:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello/build/CMakeFiles/hello_prj.dir
+C:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello/build/CMakeFiles/ZERO_CHECK.dir
