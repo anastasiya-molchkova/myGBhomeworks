@@ -1,0 +1,10 @@
+^C:\USERS\ANASTASIYA_NOTEBOOK\DESKTOP\WORK\PROGR\GEEKBRAINS\HW\HELLO\BUILD\CMAKEFILES\19DDEB9AC6152E77B8D552E31EC1DA9C\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello -BC:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello/build/HELLO_cmake.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

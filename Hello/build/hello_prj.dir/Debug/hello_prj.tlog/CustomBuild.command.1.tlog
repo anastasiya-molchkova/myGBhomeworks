@@ -1,0 +1,10 @@
+^C:\USERS\ANASTASIYA_NOTEBOOK\DESKTOP\WORK\PROGR\GEEKBRAINS\HW\HELLO\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello -BC:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello/build --check-stamp-file C:/Users/Anastasiya_Notebook/Desktop/Work/Progr/GeekBrains/HW/Hello/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
