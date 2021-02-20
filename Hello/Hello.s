@@ -9943,7 +9943,7 @@ main:                                   # @main
 	.section	.rdata,"dr",discard,"??_C@_0O@KLMCIIGF@Hello?0?5World?$CB?$AA@"
 	.globl	"??_C@_0O@KLMCIIGF@Hello?0?5World?$CB?$AA@" # @"??_C@_0O@KLMCIIGF@Hello?0?5World?$CB?$AA@"
 "??_C@_0O@KLMCIIGF@Hello?0?5World?$CB?$AA@":
-	.asciz	"Hello, World!"
+	.asciz	"Hello, GeekBrains!"
 
 	.section	.rdata,"dr",discard,"??_C@_0BF@PHHKMMFD@ios_base?3?3badbit?5set?$AA@"
 	.globl	"??_C@_0BF@PHHKMMFD@ios_base?3?3badbit?5set?$AA@" # @"??_C@_0BF@PHHKMMFD@ios_base?3?3badbit?5set?$AA@"
