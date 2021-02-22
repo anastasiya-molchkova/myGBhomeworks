@@ -1,9 +1,20 @@
 #include <iostream>
 
+// ЗАДАНИЕ 2, возможные состояния клетки игры в крестики-нолики:
+enum class CellStatus{Empty = 0, X, O};
+
+// ЗАДАНИЕ 4, поле для игры в крестики-нолики:
+struct TicTacToeField
+{
+	static const short field_size = 3;         // требует именно static!
+	CellStatus field[field_size][field_size];
+};
+
 int main()
 {
 	using std::cout;
 
+// ЗАДАНИЕ 1, создание и инициализация переменных основных типов:
 	bool boolValue = false;
 	cout << "Bool value False is: " << boolValue << "\n";
 
@@ -40,4 +51,6 @@ int main()
 	long double longDoubleNumber = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862;
 	cout << "Long double number: " << longDoubleNumber << "\n";
 
+// ЗАДАНИЕ 3, массив, способный содержать возможные варианты для игры в крестики-нолики:
+	CellStatus array_field[3][3]{{CellStatus::Empty, CellStatus::Empty, CellStatus::Empty}, {CellStatus::Empty, CellStatus::Empty, CellStatus::Empty}, {CellStatus::Empty, CellStatus::Empty, CellStatus::Empty}};
 }
