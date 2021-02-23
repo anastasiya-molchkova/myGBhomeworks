@@ -4,9 +4,18 @@
 enum class CellStatus{Empty = 0, X, O};
 
 // ЗАДАНИЕ 4, поле для игры в крестики-нолики:
+using cellSize = unsigned int;
+enum class Colors{Green, Red, Yellow, Blue, Black, White};
+
 struct TicTacToeField
 {
-	static const short field_size = 3;         // требует именно static!
+	static const short field_size = 3;               // требует именно static!
+	struct CellParameters
+	{
+		Colors color; 
+		cellSize length;
+		cellSize width;
+	} cell;
 	CellStatus field[field_size][field_size];
 };
 
