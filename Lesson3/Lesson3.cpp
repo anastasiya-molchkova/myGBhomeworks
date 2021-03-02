@@ -33,5 +33,17 @@ int main()
     expressionResult = another_a * (another_b + expressionResult);
     std::cout << "The result of the expression " << another_a << " * (" << another_b << " + (" << another_c << " / " << another_d << ")) is : " << expressionResult << "\n\n";
 
+    // TASK 4:
+    std::cout << "TASK 4:\n";
+    const int length = 3;
+    int cubeArray[length][length][length]{ {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, 
+                                           {{10, 11, 12}, {13, 14, 15}, {16, 17, 18}},
+                                           {{19, 20, 21}, {22, 23, 24}, {25, 26, 27}} };
+    int * arrPtr = &cubeArray[0][0][0];
+    arrPtr = arrPtr + (length * length) + length; // go to [1][1][0]
+    arrPtr++;                                     // go to [1][1][1]
+    std::cout << "The cubeArray[1][1][1] = " << cubeArray[1][1][1] << ", and with a pointer to the same array the result is: " << *arrPtr << "\n\n";
+
+
     return 0;
 }
