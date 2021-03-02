@@ -4,6 +4,7 @@
  * 4. Описать трёхмерный целочисленный массив, размером 3х3х3, указатель на значения внутри массива и при помощи операции разыменования вывести на экран значение центральной ячейки получившегося куба [1][1][1] */
 
 #include <iostream>
+#include "ValuesForTask3.h"
 
 int main()
 {
@@ -25,6 +26,12 @@ int main()
     std::cin >> number;
     int difference = twentyOne - number;
     std::cout << "The result of a comparison your number with " << twentyOne << " is " << ((number <= twentyOne) ? difference : 2*(-difference)) << "\n\n";
+
+    // TASK 3:
+    std::cout << "TASK 3:\n";
+    expressionResult = (static_cast<double>(another_c) / another_d);
+    expressionResult = another_a * (another_b + expressionResult);
+    std::cout << "The result of the expression " << another_a << " * (" << another_b << " + (" << another_c << " / " << another_d << ")) is : " << expressionResult << "\n\n";
 
     return 0;
 }
