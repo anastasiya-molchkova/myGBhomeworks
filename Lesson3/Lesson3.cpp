@@ -17,6 +17,14 @@ int main()
     expressionResult = a * (b + expressionResult);
     std::cout << "The result of the expression " << a << " * (" << b << " + (" << c << " / " << d << ")) is : " << expressionResult << "\n\n";
 
+    // TASK 2:
+    std::cout << "TASK 2:\n";
+    const int twentyOne = 21;
+    std::cout << "Please enter an integer number: ";
+    int number = 0;
+    std::cin >> number;
+    int difference = twentyOne - number;
+    std::cout << "The result of a comparison your number with " << twentyOne << " is " << ((number <= twentyOne) ? difference : 2*(-difference)) << "\n\n";
 
     return 0;
 }
