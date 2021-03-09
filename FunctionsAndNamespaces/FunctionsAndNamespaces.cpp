@@ -15,11 +15,24 @@ void conversion01(bool* arr, const int size)
         arr[i] = !arr[i];
 }
 
+void printArray(bool* arr, const int size)
+{
+    for (int i = 0; i < size; ++i)
+        std::cout << arr[i] << " ";
+    std::cout << "\n";
+}
+
 void task1()
 {
+    std::cout << "TASK 1 output\n";
     const int SIZE = 15;
     bool array[SIZE]{ 0,1,0,1,1,1,0,0,1,0,1,1,1,1,0 };
+    std::cout << "Initial array is:\n";
+    printArray(array, SIZE);
     conversion01(array, SIZE);
+    std::cout << "Final array is:\n";
+    printArray(array, SIZE);
+    std::cout << "\n";
 }
 
 int main()
