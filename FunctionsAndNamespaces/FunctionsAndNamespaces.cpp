@@ -72,7 +72,7 @@ void task2()
 }
 
 ////////////////////////////////////// TASK 3: /////////////////////////////////////////
-int sumElements(int* arr, const size_t firstIndex, const size_t lastIndex)
+int sumElements(const int* arr, const size_t firstIndex, const size_t lastIndex)
 {
     int sum = 0;
     for (size_t i = firstIndex; i <= lastIndex; ++i)
@@ -80,7 +80,7 @@ int sumElements(int* arr, const size_t firstIndex, const size_t lastIndex)
     return sum;
 }
 
-bool checkBalance(int* arr, const size_t size)
+bool checkBalance(const int* arr, const size_t size)
 {
     for (size_t i = 1; i < size; ++i)
         if (sumElements(arr, 0, i - 1) == sumElements(arr, i, size - 1))
@@ -107,8 +107,8 @@ void task3()
 
     } while (sizeMayBeWrong <= 0);
     size_t size = static_cast<size_t>(sizeMayBeWrong);
-        
-    int * array = new int [size];
+
+    int* array = new int[size];
     std::cout << "Please enter all the array elements now:\n";
     for (size_t i = 0; i < size; ++i)
         std::cin >> array[i];
@@ -118,8 +118,52 @@ void task3()
 
     if (checkBalance(array, size) == false)
         std::cout << "There is no sum balance in this array.\n\n";
-    
+
     delete[] array;
+}
+
+////////////////////////////////////// TASK 4: /////////////////////////////////////////
+// рекурсивно считаем "а по модулю b" применительно к размеру массива
+int mod(int a, int b)
+{
+    if (a >= b)
+        return mod(a - b, b);
+    if (a < 0)
+        return mod(b + a, b);
+    return a;
+}
+
+void cycleShift(int* arr, const size_t size, const int shift)
+{
+    int* copyArr = new int[size];
+    for (size_t i = 0; i < size; ++i)
+        copyArr[i] = arr[i];
+
+    for (size_t i = 0; i < size; ++i)
+        arr[i] = copyArr[mod(i - shift, size)];
+
+    delete[] copyArr;
+}
+
+void task4()
+{
+    std::cout << "TASK 4\n";
+
+    const size_t SIZE = 10;
+    int array[SIZE]{17, 53, 20, -43, 11, 48, -22, 14, -32, 35};
+
+    std::cout << "Initial array:\n";
+    printArray(array, SIZE);
+
+    std::cout << "Please input an integer number for array cycle shift: ";
+    int nShift;
+    std::cin >> nShift;
+
+    cycleShift(array, SIZE, nShift);
+    std::cout << "Array after cycle shift:\n";
+    printArray(array, SIZE);
+
+    std::cout << "\n";
 }
 
 int main()
@@ -127,5 +171,6 @@ int main()
     task1();
     task2();
     task3();
+    task4();
     return 0;
 }
