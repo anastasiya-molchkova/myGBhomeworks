@@ -9,34 +9,71 @@
 #include <iostream>
 
 ////////////////////////////////////// TASK 1: ///////////////////////////////////////// 
-void conversion01(bool* arr, const int size)
+void conversion01(bool* arr, const size_t size)
 {
-    for (int i = 0; i < size; ++i)
+    for (size_t i = 0; i < size; ++i)
         arr[i] = !arr[i];
 }
 
-void printArray(bool* arr, const int size)
+void printArray(bool* arr, const size_t size)
 {
-    for (int i = 0; i < size; ++i)
+    for (size_t i = 0; i < size; ++i)
         std::cout << arr[i] << " ";
     std::cout << "\n";
 }
 
 void task1()
 {
-    std::cout << "TASK 1 output\n";
-    const int SIZE = 15;
+    std::cout << "TASK 1\n";
+
+    const size_t SIZE = 15;
     bool array[SIZE]{ 0,1,0,1,1,1,0,0,1,0,1,1,1,1,0 };
-    std::cout << "Initial array is:\n";
+
+    std::cout << "Initial array:\n";
     printArray(array, SIZE);
+
     conversion01(array, SIZE);
-    std::cout << "Final array is:\n";
+    std::cout << "Final array:\n";
     printArray(array, SIZE);
+
+    std::cout << "\n";
+}
+
+////////////////////////////////////// TASK 2: /////////////////////////////////////////
+void arrFullfill(int* arr, const size_t size)
+{
+    arr[0] = 1;
+    for (size_t i = 1; i < size; ++i)
+        arr[i] = arr[i-1] + 3;
+}
+
+void printArray(int* arr, const size_t size)
+{
+    for (size_t i = 0; i < size; ++i)
+        std::cout << arr[i] << " ";
+    std::cout << "\n";
+}
+
+void task2()
+{
+    std::cout << "TASK 2\n";
+
+    const size_t SIZE = 8;
+    int array[SIZE]{};
+
+    std::cout << "Initial array:\n";
+    printArray(array, SIZE);
+
+    arrFullfill(array, SIZE);
+    std::cout << "Final array:\n";
+    printArray(array, SIZE);
+
     std::cout << "\n";
 }
 
 int main()
 {
     task1();
+    task2();
     return 0;
 }
