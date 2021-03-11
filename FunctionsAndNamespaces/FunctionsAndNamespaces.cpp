@@ -7,6 +7,7 @@
 */
 
 #include <iostream>
+#include <cstdarg>        // для работы с эллипсисом (variable length argument)
 
 ////////////////////////////////////// TASK 1: ///////////////////////////////////////// 
 void conversion01(bool* arr, const size_t size)
@@ -166,11 +167,45 @@ void task4()
     std::cout << "\n";
 }
 
+////////////////////////////////////// TASK 5: ///////////////////////////////////////// 
+// функция будет возвращать указатель на первый элемент массива, созданного из переданных аргументов
+bool * conversion01withVa(const size_t size, ...)
+{
+    bool* new_array = new bool[size];   // создадим динамический массив, который заполним изменёнными переданными аргументами
+
+    va_list list;                       
+    va_start(list, size);
+
+    for (size_t i = 0; i < size; ++i)
+        new_array[i] = !va_arg(list, bool);
+    
+    va_end(list);
+    return new_array;
+}
+
+// реализация пятого задания - сделать конвертацию 0 в 1 и наоборот, передавая в функцию список элементов массива вместо массива
+void task5()
+{
+    std::cout << "TASK 5\n";
+
+    const size_t SIZE = 15;
+    std::cout << "Initial array:\n0 1 0 1 1 1 0 0 1 0 1 1 1 1 0\n";
+
+    bool* result = conversion01withVa(SIZE, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0);
+
+    std::cout << "Final array:\n";
+    printArray(result, SIZE);
+    std::cout << "\n";
+
+    delete [] result;
+}
+
 int main()
 {
     task1();
     task2();
     task3();
     task4();
+    task5();
     return 0;
 }
