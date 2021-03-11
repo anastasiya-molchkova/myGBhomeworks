@@ -6,206 +6,26 @@
 ** 6) Написать все функции в отдельных файлах в одном пространстве имён, вызвать их на исполнение в основном файле программы используя указатели на функции.
 */
 
-#include <iostream>
-#include <cstdarg>        // для работы с эллипсисом (variable length argument)
+#include "AllTheFunctions.h"
 
-////////////////////////////////////// TASK 1: ///////////////////////////////////////// 
-void conversion01(bool* arr, const size_t size)
-{
-    for (size_t i = 0; i < size; ++i)
-        arr[i] = !arr[i];
-}
-
-void printArray(const bool* arr, const size_t size)
-{
-    for (size_t i = 0; i < size; ++i)
-        std::cout << arr[i] << " ";
-    std::cout << "\n";
-}
-
-void task1()
-{
-    std::cout << "TASK 1\n";
-
-    const size_t SIZE = 15;
-    bool array[SIZE]{ 0,1,0,1,1,1,0,0,1,0,1,1,1,1,0 };
-
-    std::cout << "Initial array:\n";
-    printArray(array, SIZE);
-
-    conversion01(array, SIZE);
-    std::cout << "Final array:\n";
-    printArray(array, SIZE);
-
-    std::cout << "\n";
-}
-
-////////////////////////////////////// TASK 2: /////////////////////////////////////////
-void arrFullfill(int* arr, const size_t size)
-{
-    arr[0] = 1;
-    for (size_t i = 1; i < size; ++i)
-        arr[i] = arr[i-1] + 3;
-}
-
-void printArray(const int* arr, const size_t size)
-{
-    for (size_t i = 0; i < size; ++i)
-        std::cout << arr[i] << " ";
-    std::cout << "\n";
-}
-
-void task2()
-{
-    std::cout << "TASK 2\n";
-
-    const size_t SIZE = 8;
-    int array[SIZE]{};
-
-    std::cout << "Initial array:\n";
-    printArray(array, SIZE);
-
-    arrFullfill(array, SIZE);
-    std::cout << "Final array:\n";
-    printArray(array, SIZE);
-
-    std::cout << "\n";
-}
-
-////////////////////////////////////// TASK 3: /////////////////////////////////////////
-int sumElements(const int* arr, const size_t firstIndex, const size_t lastIndex)
-{
-    int sum = 0;
-    for (size_t i = firstIndex; i <= lastIndex; ++i)
-        sum += arr[i];
-    return sum;
-}
-
-bool checkBalance(const int* arr, const size_t size)
-{
-    for (size_t i = 1; i < size; ++i)
-        if (sumElements(arr, 0, i - 1) == sumElements(arr, i, size - 1))
-        {
-            std::cout << "There is a sum balance in this array!\nLeft array part: ";
-            printArray(arr, i);
-            std::cout << "and right array part: ";
-            printArray(arr + i, size - i);
-            std::cout << "are equal by sum of elements.\n\n";
-            return true;
-        }
-    return false;
-}
-
-void task3()
-{
-    std::cout << "TASK 3\n";
-
-    int sizeMayBeWrong = 0;
-    do
-    {
-        std::cout << "Please input a positive integer array size:\n";
-        std::cin >> sizeMayBeWrong;
-
-    } while (sizeMayBeWrong <= 0);
-    size_t size = static_cast<size_t>(sizeMayBeWrong);
-
-    int* array = new int[size];
-    std::cout << "Please enter all the array elements now:\n";
-    for (size_t i = 0; i < size; ++i)
-        std::cin >> array[i];
-
-    std::cout << "The given array:\n";
-    printArray(array, size);
-
-    if (checkBalance(array, size) == false)
-        std::cout << "There is no sum balance in this array.\n\n";
-
-    delete[] array;
-}
-
-////////////////////////////////////// TASK 4: /////////////////////////////////////////
-// рекурсивно считаем "а по модулю b" применительно к размеру массива
-int mod(int a, int b)
-{
-    if (a >= b)
-        return mod(a - b, b);
-    if (a < 0)
-        return mod(b + a, b);
-    return a;
-}
-
-void cycleShift(int* arr, const size_t size, const int shift)
-{
-    int* copyArr = new int[size];
-    for (size_t i = 0; i < size; ++i)
-        copyArr[i] = arr[i];
-
-    for (size_t i = 0; i < size; ++i)
-        arr[i] = copyArr[mod(i - shift, size)];
-
-    delete[] copyArr;
-}
-
-void task4()
-{
-    std::cout << "TASK 4\n";
-
-    const size_t SIZE = 10;
-    int array[SIZE]{17, 53, 20, -43, 11, 48, -22, 14, -32, 35};
-
-    std::cout << "Initial array:\n";
-    printArray(array, SIZE);
-
-    std::cout << "Please input an integer number for array cycle shift: ";
-    int nShift;
-    std::cin >> nShift;
-
-    cycleShift(array, SIZE, nShift);
-    std::cout << "Array after cycle shift:\n";
-    printArray(array, SIZE);
-
-    std::cout << "\n";
-}
-
-////////////////////////////////////// TASK 5: ///////////////////////////////////////// 
-// функция будет возвращать указатель на первый элемент массива, созданного из переданных аргументов
-bool * conversion01withVa(const size_t size, ...)
-{
-    bool* new_array = new bool[size];   // создадим динамический массив, который заполним изменёнными переданными аргументами
-
-    va_list list;                       
-    va_start(list, size);
-
-    for (size_t i = 0; i < size; ++i)
-        new_array[i] = !va_arg(list, bool);
-    
-    va_end(list);
-    return new_array;
-}
-
-// реализация пятого задания - сделать конвертацию 0 в 1 и наоборот, передавая в функцию список элементов массива вместо массива
-void task5()
-{
-    std::cout << "TASK 5\n";
-
-    const size_t SIZE = 15;
-    std::cout << "Initial array:\n0 1 0 1 1 1 0 0 1 0 1 1 1 1 0\n";
-
-    bool* result = conversion01withVa(SIZE, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0);
-
-    std::cout << "Final array:\n";
-    printArray(result, SIZE);
-    std::cout << "\n";
-
-    delete [] result;
-}
+////////////////////////////////////// TASK 6: ///////////////////////////////////////// 
+typedef void(*function_pointer)();
 
 int main()
 {
-    task1();
-    task2();
-    task3();
-    task4();
-    task5();
+    // инициализируем указатели на функции функциями для пяти заданий
+    function_pointer ptr1{ work_with_functions::task1 };
+    function_pointer ptr2{ work_with_functions::task2 };
+    function_pointer ptr3{ work_with_functions::task3 };
+    function_pointer ptr4{ work_with_functions::task4 };
+    function_pointer ptr5{ work_with_functions::task5 };
+
+    // вызываем функции для задании, используя указатели на них:
+    (*ptr1)();
+    (*ptr2)();
+    (*ptr3)();
+    (*ptr4)();
+    (*ptr5)();
+
     return 0;
 }

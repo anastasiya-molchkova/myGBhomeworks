@@ -140,6 +140,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FunctionsAndNamespaces.cpp" />
+    <ClCompile Include="Task1perform.cpp" />
+    <ClCompile Include="Task2perform.cpp" />
+    <ClCompile Include="Task3perform.cpp" />
+    <ClCompile Include="Task4perform.cpp" />
+    <ClCompile Include="Task5perform.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AllTheFunctions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
