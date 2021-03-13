@@ -71,6 +71,22 @@ void task2(const std::string& filename1, const std::string& filename2, const std
 void task3(const std::string& filename, const std::string& wordForSearch)
 {
     std::cout << "Looking for \"" << wordForSearch << "\" in " << filename << "\n";
+    std::ifstream file4search(filename);
+    std::string wordFromFile;
+
+    bool found = false;
+    while (file4search && !found)
+    {
+        file4search >> wordFromFile;
+        if (wordFromFile == wordForSearch)
+            found = true;
+    }
+
+    file4search.close();
+    if (found)
+        std::cout << "The word \"" << wordForSearch << "\" was FOUND in " << filename << "\n\n";
+    else 
+        std::cout << "The word \"" << wordForSearch << "\" was NOT found in " << filename << "\n\n";
 }
 
 int main(int argc, char** argv)
