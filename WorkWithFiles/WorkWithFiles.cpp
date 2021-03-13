@@ -68,7 +68,12 @@ void task2(const std::string& filename1, const std::string& filename2, const std
     delete[] bufferText;
 }
 
-int main()
+void task3(const std::string& filename, const std::string& wordForSearch)
+{
+    std::cout << "Looking for \"" << wordForSearch << "\" in " << filename << "\n";
+}
+
+int main(int argc, char** argv)
 {
     std::string filename1{ "File1.txt" };
     std::string filename2{ "File2.txt" };
@@ -76,6 +81,10 @@ int main()
 
     std::string resultFile{ "Result.txt" };
     task2(filename1, filename2, resultFile);
+
+    // argv[0] - имя программы, argv[1] - количество аргументов программы, 
+    // argv[2] - файл,  котором ищем слово, argv[3] - слово, которое ищем
+    task3(argv[2], argv[3]);
 
     return 0;
 }
