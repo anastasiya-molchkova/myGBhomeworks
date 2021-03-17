@@ -10,6 +10,9 @@
 // TASK 2:
 #define GET_ELEMENT(ARR, row, col) *(*(ARR + row) + col)
 
+// TASK 3:
+#define GET_ARRAY_SIZE(ARR, TYPE) (sizeof(ARR)/sizeof(ARR[0]))
+
 void task1();
 void task2();
 void task3();
@@ -71,5 +74,9 @@ void task2()
 
 void task3()
 {
-
+    int array[]{10, 26, 15, 23, 11, 32, 39, 23, 25, 16};
+    std::cout << "An array: ";
+    for (auto& element : array) 
+        std::cout << element << " ";
+    std::cout << "\nhas " << GET_ARRAY_SIZE(array, int) << " elements.\n\n";
 }
