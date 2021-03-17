@@ -11,7 +11,7 @@
 #define GET_ELEMENT(ARR, row, col) *(*(ARR + row) + col)
 
 // TASK 3:
-#define GET_ARRAY_SIZE(ARR, TYPE) (sizeof(ARR)/sizeof(ARR[0]))
+#define GET_ARRAY_SIZE(ARR, TYPE) (sizeof(ARR)/sizeof(TYPE))
 
 void task1();
 void task2();
