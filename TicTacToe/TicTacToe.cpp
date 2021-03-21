@@ -77,6 +77,23 @@ void processPlayerTurn(Field& field, Sign player_sign)
     putSign(field, player_sign, row - 1, column - 1);
 }
 
+// функцию хода компьютера пока заменяем вторым игроком
+void processAITurn(Field& field, Sign sign)
+{
+    std::cout << "Enter row and column: ";
+    int row, column;
+    std::cin >> row >> column;
+
+    while (!isCellAvailable(field, row - 1, column - 1))
+    {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Wrong input, please enter row and column of an empty cell: ";
+        std::cin >> row >> column;
+    }
+    putSign(field, sign, row - 1, column - 1);
+}
+
 void printField(const Field& field)
 {
     std::string frame = "===";
@@ -116,27 +133,113 @@ void printField(const Field& field)
     std::cout << frame << '\n';
 }
 
-void runGameLoop(Sign sign)
+struct TurnOutcome 
+{
+    bool isOver : 1;
+    Sign victor : 1;
+    bool isDraw : 1;
+};
+
+bool isDraw(const Field& field) 
+{
+    for (size_t i = 0; i < field.field_size; i++) 
+        for (size_t j = 0; j < field.field_size; j++)
+            if (field.cells[i][j] == CellStatus::Empty)
+                return false;
+    return true;
+}
+
+bool checkLine(const Field& field, size_t start_row, size_t start_column, int delta_row, int delta_column) 
+{
+    size_t current_row = start_row;
+    size_t current_column = start_column;
+    auto first = field.cells[start_row][start_column];
+    if (first == CellStatus::Empty) 
+        return false;
+    while (current_row < field.field_size && current_column < field.field_size && current_row >= 0 && current_column >= 0)
+    {
+        if (field.cells[current_row][current_column] != first)
+            return false;
+        current_row += delta_row;
+        current_column += delta_column;
+    }
+    return true;
+}
+
+#define CHECK_LINE(start_row, start_column, delta_row, delta_column) \
+        if (checkLine(field, start_row, start_column, delta_row, delta_column)) {\
+            outcome.isOver = true; \
+            outcome.victor = field.cells[start_row][start_column] == CellStatus::X ? Sign::X : Sign::O; \
+            return outcome; \
+        }
+
+TurnOutcome checkTurnOutcome(const Field& field) 
+{
+    TurnOutcome outcome{};
+
+    // проверка по строкам:
+    for (size_t row = 0; row < field.field_size; row++)
+        CHECK_LINE(row, 0, 0, 1)
+    // проверка по столбцам:
+    for (size_t column = 0; column < field.field_size; column++)
+        CHECK_LINE(0, column, 1, 0)
+    // проверка двух диагоналей:
+    CHECK_LINE(0, 0, 1, 1)
+    CHECK_LINE(0, (field.field_size - 1), 1, -1)
+
+    if (isDraw(field))
+    {
+        outcome.isDraw = true;
+        outcome.isOver = true;
+    }
+
+    return outcome;
+}
+
+#undef CHECK_LINE
+
+void printGameOutcome(const TurnOutcome& outcome, Sign player_sign)
+{
+    if (outcome.isDraw)
+        std::cout << "It's a DRAW, there is no winner.\n\n";
+    else if (outcome.victor == player_sign)
+        std::cout << "WOW! CONGRATULATIONS! YOU ARE THE WINNER!!!  =) =) =)\n\n";
+    else
+        std::cout << "AI is a winner... Don't give up! Just try one more time!\n\n";
+}
+
+TurnOutcome runGameLoop(Sign player_sign)
 {
     GameData game {};
-    bool isGameOver = false;
-    if (sign == Sign::X)
-        while (!isGameOver)
-        {
-            processPlayerTurn(game.field, sign);
-            printField(game.field);
-            //computerTurn();
-            //printTurnResult();
-        }
+    TurnOutcome outcome{};
+
+    void (*Xturn)(Field&, Sign);
+    void (*Oturn)(Field&, Sign);
+    if (player_sign == Sign::X)
+    {
+        Xturn = processPlayerTurn;
+        Oturn = processAITurn;
+    }
     else
-        while (!isGameOver)
-        {
-            //computerTurn();
-            processPlayerTurn(game.field, sign);
-            printField(game.field);
-            //printTurnResult();
-        }
-    //printGameOutcome();
+    {
+        Xturn = processAITurn;
+        Oturn = processPlayerTurn;
+    }
+
+    while (true)
+    {
+        Xturn(game.field, Sign::X);
+        printField(game.field);
+        outcome = checkTurnOutcome(game.field);
+        if (outcome.isOver)
+            return outcome;
+
+        Oturn(game.field, Sign::O);
+        printField(game.field);
+        outcome = checkTurnOutcome(game.field);
+        if (outcome.isOver)
+            return outcome;
+    }
 }
 
 bool askQuestion(char positive, char negative) 
@@ -156,7 +259,7 @@ bool askQuestion(char positive, char negative)
 
 bool queryPlayAgain() 
 {
-    std::cout << "Want to play again? [y or n]: ";
+    std::cout << "Do you want to play again? [y - yes / n - no]: ";
     return askQuestion('y', 'n');
 }
 
@@ -171,9 +274,8 @@ int main()
     while(!shouldExit) 
     {
         Sign player_sign = getPlayerSign();
-        runGameLoop(player_sign);
-        //auto outcome = runGameLoop(player_sign);
-        //printGameOutcome(outcome, player_sign);
+        auto outcome = runGameLoop(player_sign);
+        printGameOutcome(outcome, player_sign);
         shouldExit = !queryPlayAgain();
     }
 
