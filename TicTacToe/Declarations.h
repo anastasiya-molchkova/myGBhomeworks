@@ -17,7 +17,7 @@ struct CellParameters
 // поле для игры в крестики-нолики:
 struct Field
 {
-    static const short size = 3;               // требует именно static!
+    static const size_t size = 3;     
     CellParameters cell_data;
     CellStatus cells[size][size];
 };

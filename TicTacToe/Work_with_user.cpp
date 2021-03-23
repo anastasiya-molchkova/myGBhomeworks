@@ -15,14 +15,20 @@ Sign getPlayerSign()
     return Sign::O;
 }
 
-void printGameOutcome(const TurnOutcome& outcome, Sign player_sign)
+size_t getSize()
 {
-    if (outcome.isDraw)
-        std::cout << "It's a DRAW, there is no winner.\n\n";
-    else if (outcome.victor == player_sign)
-        std::cout << "WOW! CONGRATULATIONS! YOU ARE THE WINNER!!!  =) =) =)\n\n";
-    else
-        std::cout << "AI is a winner... Don't give up! Just try one more time!\n\n";
+    std::cout << "Please input the field size: ";
+    int answer;
+    std::cin >> answer;
+    while (std::cin.fail() || answer <= 0 || answer > 50)
+    {
+        std::cin.clear();
+        std::cin.ignore(32767, '\n');
+        std::cout << "Please try to input the field size again: ";
+        std::cin >> answer;
+    }
+    std::cin.ignore(32767, '\n');
+    return static_cast<size_t>(answer);
 }
 
 bool askQuestion(char positive, char negative)
@@ -83,4 +89,14 @@ void printField(const Field& field)
             std::cout << frame_between << '\n';
     }
     std::cout << frame << '\n';
+}
+
+void printGameOutcome(const TurnOutcome& outcome, Sign player_sign)
+{
+    if (outcome.isDraw)
+        std::cout << "It's a DRAW, there is no winner.\n\n";
+    else if (outcome.victor == player_sign)
+        std::cout << "WOW! CONGRATULATIONS! YOU ARE THE WINNER!!!  =) =) =)\n\n";
+    else
+        std::cout << "AI is a winner... Don't give up! Just try one more time!\n\n";
 }
