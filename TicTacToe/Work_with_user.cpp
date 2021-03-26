@@ -1,9 +1,8 @@
-#include <iostream>
-#include <string>          // для рисования рамки поля
 #include "Declarations.h"
 
 Sign getPlayerSign()
 {
+    std::cout << "\n================================IT'S A NEW GAME!================================\n";
     std::cout << "Your sign is ";
     bool isX = rand() % 2;
     if (isX)
@@ -20,11 +19,14 @@ size_t getSize()
     std::cout << "Please input the field size: ";
     int answer;
     std::cin >> answer;
-    while (std::cin.fail() || answer <= 0 || answer > 50)
+    const size_t min_size = 3;
+    const size_t max_size = 9;
+    while (std::cin.fail() || answer < min_size || answer > max_size)
     {
+
         std::cin.clear();
         std::cin.ignore(32767, '\n');
-        std::cout << "Please try to input the field size again: ";
+        std::cout << "Please try to input the field size again, it should be from " << min_size << " to " << max_size << ": ";
         std::cin >> answer;
     }
     std::cin.ignore(32767, '\n');
@@ -67,7 +69,7 @@ void printField(const Field& field)
         std::cout << "||";
         for (size_t j = 0; j < field.size; ++j)
         {
-            switch (field.cells[i][j])
+            switch (field.cells[i*field.size + j])
             {
             case CellStatus::Empty:
                 std::cout << " ";

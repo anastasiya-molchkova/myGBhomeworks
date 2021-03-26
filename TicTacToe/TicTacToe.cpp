@@ -11,15 +11,18 @@ int main()
     srand(static_cast<unsigned int>(time(0)));
     rand();
 
+    GameData game = game_initialization();       // запрашиваем размер поля, динамически создаём массив нужного размера
     bool shouldExit = false;
     
     while(!shouldExit) 
     {
-        Sign player_sign = getPlayerSign();
-        auto outcome = runGameLoop(player_sign);
-        printGameOutcome(outcome, player_sign);
+        clear_field(game.field);
+        game.player_sign = getPlayerSign();
+        auto outcome = runGameLoop(game);
+        printGameOutcome(outcome, game.player_sign);
         shouldExit = !queryPlayAgain();
     }
 
+    game_exit(game);                             // освобождаем память, выделенную под поле
     return 0;
 }
