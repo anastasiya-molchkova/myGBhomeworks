@@ -1,37 +1,32 @@
+//                      ОБЩИЙ ФАЙЛ С ОБЪЯВЛЕНИЯМИ НЕОБХОДИМЫХ СТРУКТУР И ОСНОВНЫХ ФУНКЦИЙ:
 #ifndef DECLARATIONS_H
 #define DECLARATIONS_H
 
-#include <iostream>
+#include <iostream>        // для ввода-вывода данных
 #include <string>          // для рисования рамки поля
+#include <iomanip>         // для форматированного вывода в консоль
 
-// возможные состояния клетки игры в крестики-нолики:
+// возможные состояния клетки игры в крестики-нолики
 enum class CellStatus { Empty = 0, X, O };
 
-using cellSize = size_t;
-enum class Colors { Green, Red, Yellow, Blue, Black, White };
-
-struct CellParameters
-{
-    Colors color;
-    cellSize length;
-    cellSize width;
-};
-
-// поле для игры в крестики-нолики:
+// поле для игры в крестики-нолики
 struct Field
 {
     size_t size = 3;
-    CellParameters cell_data;
-    CellStatus * cells;
+    CellStatus * cells;             // массив клеток поля. В начале игры после получения размера поля создаётся динамически
 };
 
+// знак, которым можно играть - крестик или нолик
 enum class Sign { O, X };
 
+// поле и знак, которым играет пользователь
 struct GameData
 {
     Field field;
     Sign player_sign;
 };
+
+// исход игры - закончена ли игра, знак победителя и ничья ли
 struct TurnOutcome
 {
     bool isOver;
@@ -39,6 +34,7 @@ struct TurnOutcome
     bool isDraw;
 };
 
+// функции, используемые в разных файлах (не все):
 GameData game_initialization();
 void clear_field(Field& field);
 void game_exit(GameData& game);
@@ -52,5 +48,6 @@ void printGameOutcome(const TurnOutcome& outcome, Sign player_sign);
 TurnOutcome runGameLoop(GameData& game);
 bool askQuestion(char positive, char negative);
 bool queryPlayAgain();
+void print_X_cell();
 
 #endif

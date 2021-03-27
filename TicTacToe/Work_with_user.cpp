@@ -1,8 +1,9 @@
+//                      ‘ј…Ћ — ‘”Ќ ÷»яћ» ƒЋя ¬«ј»ћќƒ≈…—“¬»я — ѕќЋ№«ќ¬ј“≈Ћ≈ћ:
 #include "Declarations.h"
 
+// случайным образом определ€ет знак, которым играет игрок
 Sign getPlayerSign()
 {
-    std::cout << "\n================================IT'S A NEW GAME!================================\n";
     std::cout << "Your sign is ";
     bool isX = rand() % 2;
     if (isX)
@@ -14,13 +15,14 @@ Sign getPlayerSign()
     return Sign::O;
 }
 
+// получает размер игрового пол€ от пользовател€
 size_t getSize()
 {
     std::cout << "Please input the field size: ";
     int answer;
     std::cin >> answer;
     const size_t min_size = 3;
-    const size_t max_size = 9;
+    const size_t max_size = 20;
     while (std::cin.fail() || answer < min_size || answer > max_size)
     {
 
@@ -33,6 +35,7 @@ size_t getSize()
     return static_cast<size_t>(answer);
 }
 
+// получает от пользовател€ ответ (принимаетс€ всего два варианта ответа)
 bool askQuestion(char positive, char negative)
 {
     char sign{};
@@ -48,51 +51,14 @@ bool askQuestion(char positive, char negative)
     return sign == positive;
 }
 
+// узнаЄт у пользовател€, хочет ли он сыграть ещЄ раз
 bool queryPlayAgain()
 {
     std::cout << "Do you want to play again? [y - yes / n - no]: ";
     return askQuestion('y', 'n');
 }
 
-void printField(const Field& field)
-{
-    std::string frame = "===";
-    std::string frame_between = "---";
-    for (size_t i = 0; i < field.size; ++i)
-    {
-        frame += "==";
-        frame_between += "--";
-    }
-    std::cout << frame << '\n';
-    for (size_t i = 0; i < field.size; ++i)
-    {
-        std::cout << "||";
-        for (size_t j = 0; j < field.size; ++j)
-        {
-            switch (field.cells[i*field.size + j])
-            {
-            case CellStatus::Empty:
-                std::cout << " ";
-                break;
-            case CellStatus::X:
-                std::cout << "X";
-                break;
-            case CellStatus::O:
-                std::cout << "O";
-                break;
-            default:
-                std::cout << "E";
-                break;
-            }
-            std::cout << "|";
-        }
-        std::cout << "|\n";
-        if (i != field.size - 1)
-            std::cout << frame_between << '\n';
-    }
-    std::cout << frame << '\n';
-}
-
+// выводит на экран результат игры
 void printGameOutcome(const TurnOutcome& outcome, Sign player_sign)
 {
     if (outcome.isDraw)

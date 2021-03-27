@@ -1,4 +1,4 @@
-#include <iostream>
+//                      тюик я тсмйжхълх, нопедекъчыхлх кнцхйс хцпш:
 #include "Declarations.h"
 
 bool checkLine(const Field& field, size_t start_row, size_t start_column, int delta_row, int delta_column)
