@@ -35,27 +35,20 @@ size_t getSize()
     return static_cast<size_t>(answer);
 }
 
-// получает от пользователя ответ (принимается всего два варианта ответа)
-bool askQuestion(char positive, char negative)
-{
-    char sign{};
-    std::cin >> sign;
-    sign = tolower(sign);
-
-    while (sign != positive && sign != negative)
-    {
-        std::cout << "Wrong input: received '" << sign << "', should be one of " << positive << " or " << negative << "\n";
-        std::cin >> sign;
-        sign = tolower(sign);
-    }
-    return sign == positive;
-}
-
 // узнаёт у пользователя, хочет ли он сыграть ещё раз
 bool queryPlayAgain()
 {
     std::cout << "Do you want to play again? [y - yes / n - no]: ";
-    return askQuestion('y', 'n');
+    char yes{ 'y' }, no{ 'n' }, sign{};
+    std::cin >> sign;
+    sign = tolower(sign);
+    while (sign != yes && sign != no)
+    {
+        std::cout << "Wrong input: received '" << sign << "', should be one of " << yes << " or " << no << "\n";
+        std::cin >> sign;
+        sign = tolower(sign);
+    }
+    return (sign == yes);
 }
 
 // выводит на экран результат игры

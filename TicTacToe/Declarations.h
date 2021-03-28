@@ -48,6 +48,5 @@ void printGameOutcome(const TurnOutcome& outcome, Sign player_sign);
 TurnOutcome runGameLoop(GameData& game);
 bool askQuestion(char positive, char negative);
 bool queryPlayAgain();
-void print_X_cell();
 
 #endif

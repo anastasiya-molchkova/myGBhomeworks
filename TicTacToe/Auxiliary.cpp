@@ -71,31 +71,33 @@ void clear_field(Field& field)
 // печатает текущее состояние игрового поля
 void printField(const Field& field)
 {
-    std::string frame = "   ";          // строковая переменная для рамки внизу и вверху поля
+    std::string frame = "   ";             // строковая переменная для рамки внизу и вверху поля
     std::string frame_between = "---";     // строковая переменная для рамки между строками поля
     std::cout << "    ";
-    for (size_t i = 0; i < field.size; ++i)
+    // создаём рамки и печатаем номера столбцов:
+    for (size_t i = 0; i < field.size; ++i) 
     {
-        // номера столбцов
+        // печатаем номера столбцов
         std::cout << std::setw(4) << std::left << i + 1;
         frame += "====";
         frame_between += "----";
     }
     std::cout << '\n' << frame << '\n';
     for (size_t i = 0; i < field.size; ++i)
+    // печатаем поле по строкам, i - номер строки
     {
-        // номера строк
+        // печатаем номера строк
         std::cout << std::setw(2) << std::left << i + 1 << "|";
         for (size_t j = 0; j < field.size; ++j)
         {
+            // j - номер столбца
             switch (field.cells[i * field.size + j])
-            {
+            { // печатаем содержимое каждой клетки
             case CellStatus::Empty:
                 std::cout << "   |";
                 break;
             case CellStatus::X:
                 std::cout << " X |";
-
                 break;
             case CellStatus::O:
                 std::cout << " O |";
