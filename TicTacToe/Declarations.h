@@ -46,7 +46,6 @@ void printField(const Field& field);
 bool isDraw(const Field& field);
 void printGameOutcome(const TurnOutcome& outcome, Sign player_sign);
 TurnOutcome runGameLoop(GameData& game);
-bool askQuestion(char positive, char negative);
 bool queryPlayAgain();
 
 #endif

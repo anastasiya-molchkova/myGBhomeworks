@@ -1,6 +1,5 @@
 //                      ФАЙЛ СО ВСПОМОГАТЕЛЬНЫМИ ФУНКЦИЯМИ:
 #include "Declarations.h"
-//#include <Windows.h>          // для работы с функциями Win API
 
 // проверяет, можно ли ставить знак в клетку с заданными координатами (начиная от 0)
 bool isCellAvailable(const Field& field, const int row, const int column)
@@ -97,15 +96,15 @@ void printField(const Field& field)
                 std::cout << "   |";
                 break;
             case CellStatus::X:
-                std::cout << " X |";
+                std::cout << " \x1b[31mX \x1b[0;0m|";    // печатаем крестик красным цветом
                 break;
             case CellStatus::O:
-                std::cout << " O |";
+                std::cout << " \x1b[34mO \x1b[0;0m|";    // печатаем нолик синим цветом
                 break;
             }
         }
         // переводим курсор вниз законченного ряда
-        std::cout << "\n";
+        std::cout << '\n';
         if (i < field.size - 1)
             std::cout << frame_between << '\n';
     }

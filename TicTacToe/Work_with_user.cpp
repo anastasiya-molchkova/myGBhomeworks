@@ -4,7 +4,7 @@
 // случайным образом определяет знак, которым играет игрок
 Sign getPlayerSign()
 {
-    std::cout << "Your sign is ";
+    std::cout << "\nYour sign is ";
     bool isX = rand() % 2;
     if (isX)
     {
