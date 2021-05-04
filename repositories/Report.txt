@@ -6,3 +6,4 @@ Report for 7th homework
 5) Удалила пакеты с помощью sudo dpkg -r nginx. Однако всё равно остались записи в /etc/apt/sources.list.d/nginx-ubuntu-stable-bionic.list. См. скрин 6.
 6) Хотела установить google chrome. Поиск пакета - скрин 7, буду устанавливать google-translate.
 7) Скрин 7 - установила google-translate.
+8) Скрин 8 - задание 3 выполнено.
