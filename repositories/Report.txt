@@ -4,5 +4,5 @@ Report for 7th homework
 3) Поняла, я опечаталась в команде. Повтор - скрины 3, 4.
 4) Выполнила команду sudo apt update. Таким образом, считаем, что nginx установлен. См. скрин 5.
 5) Удалила пакеты с помощью sudo dpkg -r nginx. Однако всё равно остались записи в /etc/apt/sources.list.d/nginx-ubuntu-stable-bionic.list. См. скрин 6.
- 
-
+6) Хотела установить google chrome. Поиск пакета - скрин 7, буду устанавливать google-translate.
+7) Скрин 7 - установила google-translate.
