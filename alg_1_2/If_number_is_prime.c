@@ -31,8 +31,9 @@ int main()
     if (number > 2)
     {
         unsigned divider;
+	double sqr_root = sqrt(number)
 
-        for (divider = 2; divider <= sqrt(number); divider++)
+        for (divider = 2; divider <= sqr_root; divider++)
             if (number % divider == 0)
             {
                 is_prime = 0;
