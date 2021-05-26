@@ -102,7 +102,7 @@ void improved_qsort(int* array, int first, int last)
 // Решение первого задания - улучшенная быстрая сортировка массива
 void task1()
 {
-    printf("1. Улучшенная быстрая сортировка двумерного массива.\n\n");
+    printf("1. Улучшенная быстрая сортировка массива.\n\n");
 
     const int array_length = 200;
     int array[array_length];
@@ -118,11 +118,73 @@ void task1()
     printf("\n\n");
 }
 
+///////////////////////////////// ЗАДАНИЕ 2
+
+// блочная сортировка - код 1-в-1 с урока, но НЕ РАБОТАЕТ
+void bucket_sort(int* arr, int len)
+{
+    const int max_volume = len;
+    const int buckets_num = 10;
+
+    // эта строчка в оригинале должна быть int buckets[buckets_num][max_volume + 1]; но так она не компилируется
+    int buckets[buckets_num][101];
+    for (int i = 0; i < buckets_num; ++i) 
+    {
+        buckets[i][max_volume] = 0;
+    }
+
+    // на 95% уверена, что проблема здесь:
+    for (int digit = 1; digit < 1000000; digit *= 10) 
+    {
+        for (int i = 0; i < max_volume; ++i) 
+        {
+            int d = (arr[i] / digit) % buckets_num;
+
+            int counter = buckets[d][max_volume];
+            buckets[d][counter] = arr[i];
+            counter++;
+            buckets[d][max_volume] = counter;
+
+            buckets[d][buckets[d][max_volume]++] = arr[i];
+        }
+        int idx = 0;
+        for (int i = 0; i < buckets_num; ++i) 
+        {
+            for (int j = 0; j < buckets[i][max_volume]; ++j) 
+            {
+                arr[idx++] = buckets[i][j];
+            }
+            buckets[i][max_volume] = 0;
+        }
+    }
+}
+        
+
+// Решение второго задания - сортировка только чётных чисел массива при помощи алгоритма блочной сортировки
+void task2()
+{
+    printf("2. Блочная сортировка чётных чисел массива при помощи алгоритма блочной сортировки.\n\n");
+
+    const int array_length = 100;
+    int array[array_length];
+
+    fill_array_by_random(array, array_length, 1000);
+    printf("Начальный массив:\n");
+    print_array(array, array_length);
+
+    printf("Отсортированный массив:\n");
+    bucket_sort(array, array_length);
+    print_array(array, array_length);
+
+    printf("\n\n");
+}
+
 int main()
 {
     setlocale(LC_CTYPE, "rus");  // для кириллицы
 
     task1();
+    task2();
 
     return 0;
 }
