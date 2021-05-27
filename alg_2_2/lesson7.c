@@ -120,33 +120,39 @@ void task1()
 
 ///////////////////////////////// ЗАДАНИЕ 2
 
-// блочная сортировка - код 1-в-1 с урока, но НЕ РАБОТАЕТ
+// создаёт двумерный массив
+int** init_array(int** array, int rows, int cols)
+{
+    array = (int**)calloc(sizeof(int*), rows);
+    for (int i = 0; i < rows; ++i)
+        *(array + i) = (int*)calloc(sizeof(int), cols);
+    return array;
+}
+
+// блочная сортировка - код 1-в-1 с урока, можно не проверять
 void bucket_sort(int* arr, int len)
 {
     const int max_volume = len;
     const int buckets_num = 10;
 
-    // эта строчка в оригинале должна быть int buckets[buckets_num][max_volume + 1]; но так она не компилируется
-    int buckets[buckets_num][101];
+    // массив распределения чисел по корзинам. Последний элемент каждой корзины - счётчик элементов в ней.
+    int** buckets = NULL;
+    buckets = init_array(buckets, buckets_num, max_volume+1);
+    // обнуляем счётчик элементов для каждой корзины
     for (int i = 0; i < buckets_num; ++i) 
-    {
         buckets[i][max_volume] = 0;
-    }
 
     // на 95% уверена, что проблема здесь:
-    for (int digit = 1; digit < 1000000; digit *= 10) 
+    for (int digit = 1; digit < 100000000; digit *= 10) 
     {
+        // распределяем по корзинам
         for (int i = 0; i < max_volume; ++i) 
         {
             int d = (arr[i] / digit) % buckets_num;
 
-            int counter = buckets[d][max_volume];
-            buckets[d][counter] = arr[i];
-            counter++;
-            buckets[d][max_volume] = counter;
-
             buckets[d][buckets[d][max_volume]++] = arr[i];
         }
+        // собираем корзины обратно в массив
         int idx = 0;
         for (int i = 0; i < buckets_num; ++i) 
         {
