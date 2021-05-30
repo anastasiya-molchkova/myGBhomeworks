@@ -120,7 +120,7 @@ void task1()
 
 ///////////////////////////////// ЗАДАНИЕ 2
 
-// содаёт двумерный массив
+// создаёт двумерный массив
 int** init_array(int** array, int rows, int cols)
 {
     array = (int**)calloc(sizeof(int*), rows);
@@ -151,9 +151,12 @@ void bucket_sort(int* arr, int len)
         // распределяем по корзинам
         for (int i = 0; i < max_volume; ++i) 
         {
-            int d = (arr[i] / digit) % buckets_num;
-
-            buckets[d][buckets[d][max_volume]++] = arr[i];
+            // распределяем только чётные элементы
+            if (arr[i] % 2 == 0)
+            {
+                int d = (arr[i] / digit) % buckets_num;
+                buckets[d][buckets[d][max_volume]++] = arr[i];
+            }
         }
         // собираем корзины обратно в массив
         int idx = 0;   // индекс в исходном массиве
@@ -161,15 +164,11 @@ void bucket_sort(int* arr, int len)
         {
             for (int j = 0; j < buckets[i][max_volume]; ++j) 
             {
-                // ставим только чётные элементы
-                if (buckets[i][j] % 2 == 0)
-                {
-                    // ищем индекс следующего чётного элемента
-                    while (arr[idx] % 2 != 0)
-                        ++idx;
-                    // ставим отсортированный чётный элемент на очередной место чётного элемента в исходном массиве
-                    arr[idx++] = buckets[i][j];
-                } 
+                // ищем индекс следующего чётного элемента
+                while (arr[idx] % 2 != 0)
+                    ++idx;
+                // ставим отсортированный чётный элемент на очередной место чётного элемента в исходном массиве
+                arr[idx++] = buckets[i][j];
             }
             buckets[i][max_volume] = 0;
         }
@@ -180,7 +179,7 @@ void bucket_sort(int* arr, int len)
 // Решение второго задания - сортировка только чётных чисел массива при помощи алгоритма блочной сортировки
 void task2()
 {
-    printf("2. Блочная сортировка чётных чисел массива при помощи алгоритма блочной сортировки.\n\n");
+    printf("2. Сортировка чётных чисел массива при помощи алгоритма блочной сортировки.\n\n");
 
     const int array_length = 100;
     int array[array_length];
