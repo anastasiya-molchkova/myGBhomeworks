@@ -50,9 +50,9 @@ void bubble_sort(int** array)
 {
     // будем получать координаты текущего и следующего элемента массива из счётчика цикла
     int element_row, element_column, next_element_row, next_element_column;
-
-    for (int counter = 0; counter < N * M; ++counter)
-        for (int index = 0; index < (N * M - 1); ++index)
+    int full_size = N * M;
+    for (int counter = 0; counter < full_size; ++counter)
+        for (int index = 0; index < (full_size - 1); ++index)
         {
             element_row = index / N;
             next_element_row = (index + 1) / N;
