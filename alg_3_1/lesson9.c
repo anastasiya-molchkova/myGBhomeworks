@@ -33,16 +33,16 @@ void initQueue(Queue* q)
 }
 
 // удаляет из очереди первый элемент
-Node* simple_rem(Queue* q) 
+Node* simple_rem(Queue* q)
 {
     if (q->items == 0)
         return NULL;
     else 
     {
-        int idx = q->head++ % QUEUE_SIZE;
+        int idx = (q->head)++ % QUEUE_SIZE;
         Node* tmp = q->queue[idx];
         q->queue[idx] = NULL;
-        q->items--;
+        (q->items)--;
         return tmp;
     }
 }
@@ -58,8 +58,8 @@ void pr_ins(Node new_node, Queue* q)
     // сначала обрабатываем случай, если очередь пустая
     if (q->items == 0)
     {
-        q->queue[q->tail++] = node;
-        q->items++;
+        q->queue[(q->tail)++] = node;
+        (q->items)++;
     }
     // и если очередь уже заполнена
     else if (q->items == QUEUE_SIZE)
@@ -80,9 +80,9 @@ void pr_ins(Node new_node, Queue* q)
             if (q->queue[idx]->priority > node->priority)
                 break;
             else
-                idx++; // если прошли всю очередь и не нашли элемент, перед которым вставить, будем вставлять после хвоста
+                idx++; // если прошли всю очередь и не нашли элемент, перед которым вставить, будем вставлять в хвост
         }
-        flag = idx % QUEUE_SIZE; // т.к. idx может быть на 1 больше хвоста
+        flag = idx % QUEUE_SIZE;
         i++;                     // индекс элемента после места вставки
         // сдвигаем следующие элементы вправо на 1
         while (i <= q->tail)
@@ -94,8 +94,8 @@ void pr_ins(Node new_node, Queue* q)
             i++;
         }
         q->queue[flag] = node;
-        q->items++;
-        q->tail++;
+        (q->items)++;
+        (q->tail)++;
     }
 }
 
@@ -114,12 +114,12 @@ void simple_ins(Node new_node, Queue* q)
     }
 
     // иначе (в очереди есть место для нового)
-    q->queue[q->tail] = node;
-    q->tail++;
-    q->items++;
+    q->queue[q->tail % QUEUE_SIZE] = node;
+    (q->tail)++;
+    (q->items)++;
 }
 
-// удаляет из очереди элемент с лучшим (наменьшим) приоритетом
+// удаляет из очереди наиболее приоритетный элемент (чем меньше - тем приоритетней)
 Node* pr_rem(Queue* q)
 {
     if (q->items == 0)
@@ -127,34 +127,41 @@ Node* pr_rem(Queue* q)
     else
     {
         // ищем элемент с лучшим приоритетом, запоминаем его индекс
-        int idx_to_del = q->head % QUEUE_SIZE;
-        int best_priority = q->queue[idx_to_del]->priority;
+        int idx_to_del = (q->head) % QUEUE_SIZE;
+        int best_priority = (q->queue[idx_to_del])->priority;
         int idx = 0;
-        int counter = 0;
+        int counter = 0;  // это будет счётчик следующего элемента
         for (int i = q->head; i < q->tail; ++i)
         {
             idx = i % QUEUE_SIZE;
-            if ((q->queue[idx]->priority ) < best_priority)
+            if (((q->queue[idx])->priority) < best_priority)
             {
-                best_priority = (q->queue[idx]->priority);
+                best_priority = ((q->queue[idx])->priority);
                 idx_to_del = idx;
-                counter = i;
+                counter = (i + 1);
             }
         }
 
         Node* tmp = q->queue[idx_to_del];
-        int current = idx_to_del;
-        counter++;
-        // сдвигаем следующие элементы влево на 1
-        while (counter < q->tail)
+
+        if (idx_to_del == ((q->head) % QUEUE_SIZE))
         {
-            q->queue[current % QUEUE_SIZE] = q->queue[counter % QUEUE_SIZE];
-            current++;
-            counter++;
+            q->queue[idx_to_del] = NULL;
+            (q->head)++;
         }
-        q->queue[q->tail % QUEUE_SIZE] = NULL;
-        q->tail--;
-        q->items--;
+        else
+        {
+            int current = idx_to_del;
+            // сдвигаем следующие элементы влево на 1, затирая удаляемый
+            while (counter <= q->tail)
+            {
+                q->queue[current % QUEUE_SIZE] = q->queue[counter % QUEUE_SIZE];
+                current++;
+                counter++;
+            }
+            (q->tail)--;
+        }
+        (q->items)--;
         return tmp;
     }
 }
@@ -175,49 +182,50 @@ void printQueue(Queue* q)
 
 void task1()
 {
+    printf("1. Реализация очереди с приоритетным исключением.\nЗаполним всю очередь парами приоритет-значение:\n");
+    
     Queue some_queue;
-
     initQueue(&some_queue);
-    pr_ins({ 1, 11 }, &some_queue);
+
+    simple_ins({ 1, 11 }, &some_queue);
+    simple_ins({ 3, 22 }, &some_queue);
+    simple_ins({ 4, 33 }, &some_queue);
+    simple_ins({ 2, 44 }, &some_queue);
+    simple_ins({ 3, 55 }, &some_queue);
+    simple_ins({ 4, 66 }, &some_queue);
+    simple_ins({ 5, 77 }, &some_queue);
+    simple_ins({ 1, 88 }, &some_queue);
+    simple_ins({ 2, 99 }, &some_queue);
+    simple_ins({ 6, 100 }, &some_queue);
     printQueue(&some_queue);
-    pr_ins({ 3, 22 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 4, 33 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 2, 44 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 3, 55 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 4, 66 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 5, 77 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 1, 88 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 2, 99 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 6, 100 }, &some_queue);
-    printQueue(&some_queue);
+
+    printf("Теперь удалим 7 элементов с лучшим приоритетом:\n");
     for (int i = 0; i < 7; ++i) 
     {
-        Node* n = simple_rem(&some_queue);
-        printf("Deleted element [%d, %d]\n", n->priority, n->data);
-        printQueue(&some_queue);
+        Node* n = pr_rem(&some_queue);
+        printf("удалён элемент [%d, %d]\n", n->priority, n->data);
     }
-    pr_ins({ 1, 110 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 3, 120 }, &some_queue);
-    printQueue(&some_queue);
-    pr_ins({ 6, 130 }, &some_queue);
     printQueue(&some_queue);
 
+    printf("Добавим ещё 6 элементов:\n");
+    simple_ins({ 1, 110 }, &some_queue);
+    simple_ins({ 3, 120 }, &some_queue);
+    simple_ins({ 6, 130 }, &some_queue);
+    simple_ins({ 2, 600 }, &some_queue);
+    simple_ins({ 1, 330 }, &some_queue);
+    simple_ins({ 4, 520 }, &some_queue);
+
+    printQueue(&some_queue);
+
+    printf("... и удалим 5 наиболее приоритетных элементов:\n");
     for (int i = 0; i < 5; ++i) 
     {
-        Node* n = simple_rem(&some_queue);
-        printf("Deleted element [%d, %d] \n", n->priority, n->data);
-        printQueue(&some_queue);
+        Node* n = pr_rem(&some_queue);
+        printf("удалён элемент [%d, %d] \n", n->priority, n->data);
     }
+    printQueue(&some_queue);
 
+    printf("\n\n");
 }
 
 ///////////////////////////////// ЗАДАНИЕ 2
@@ -291,13 +299,13 @@ void task2()
     convert_to_bin(n);
     while (cursor != -1)
         printf("%c", popStack());
-    printf("\n");
+    printf("\n\n");
 }
 
 int main()
 {
     setlocale(LC_CTYPE, "rus");  // для кириллицы
-    // task1();
+    task1();
     task2();
     return 0;
 }
