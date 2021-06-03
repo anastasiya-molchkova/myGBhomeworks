@@ -4,8 +4,8 @@
 
 // ниже реализация односвязного списка (взята с урока):
 #define T char
-#define True 1 == 1
-#define False 1 != 1
+#define True (1 == 1)
+#define False (1 != 1)
 typedef int boolean;
 
 typedef struct OneLinkNode
@@ -203,11 +203,124 @@ void task2()
     printf("\n\n");
 }
 
+///////////////////////////////// ЗАДАНИЕ 3
+
+typedef struct Node
+{
+    int dat;
+    struct Node* next;
+} Node;
+
+typedef struct
+{
+    Node* head;
+    int size;
+} List;
+
+void initList(List* lst)
+{
+    lst->head = NULL;
+    lst->size = 0;
+}
+
+void insert(List* lst, int data)
+{
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->dat = data;
+    new_node->next = NULL;
+
+    Node* current = lst->head;
+    if (current == NULL) {
+        lst->head = new_node;
+        lst->size++;
+    }
+    else {
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = new_node;
+        lst->size++;
+    }
+}
+
+void printIntNode(Node* n)
+{
+    if (n == NULL) {
+        printf("[ ]");
+        return;
+    }
+    printf("[%d]", n->dat);
+}
+
+void printIntList(List* lst)
+{
+    Node* current = lst->head;
+    if (current == NULL) {
+        printIntNode(current);
+    }
+    else {
+        do {
+            printIntNode(current);
+            current = current->next;
+        } while (current != NULL);
+    }
+    printf(" Size: %d \n", lst->size);
+}
+
+// определяет, отсортирован ли связный список
+boolean checkIfListSorted(List* lst)
+{
+    Node* current = lst->head;
+    boolean increase = True;
+    int difference = ((current->next)->dat) - (current->dat);
+    if (difference < 0)
+        increase = False;
+
+    while (current->next != NULL)
+    {
+        difference = (current->next)->dat - (current->dat);
+        if (((increase == True) && (difference < 0)) || ((increase == False) && (difference > 0)))
+            return False;
+        current = current->next;
+    }
+    return True;
+}
+
+// определяет, отсортирован ли полученный от пользователя список
+void task3()
+{
+    printf("3. Проверка отсортированности списка\n");
+    List* lst = (List*)malloc(sizeof(List));
+    initList(lst);
+    
+    // элементы списка предоставим вводить пользователю
+    char text_number[256];
+    int number = 0;
+    do
+    {
+        printf("Введите элемент списка (0 - чтобы закончить): ");
+        scanf("%s", text_number);
+        number = atoi(text_number);
+        if (number > 0)
+            insert(lst, number);
+    } while (number > 0);
+    
+    printf("\nПолученный список\n");
+    printIntList(lst);
+
+    if (lst->size <= 1)
+        printf("слишком мал, чтобы быть не отсортированным\n");
+    else
+        printf("%sотсортирован", (checkIfListSorted(lst))?"":"не ");
+
+    printf("\n\n");
+}
+
 int main()
 {
     setlocale(LC_CTYPE, "rus");  // для кириллицы
     task1();
     task2();
-    //task3();
+    task3();
     return 0;
 }
