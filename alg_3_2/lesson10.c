@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <locale.h>  // для кириллицы
 
-///////////////////////////////// ЗАДАНИЕ 1
-
-// ниже реализация стэка на основе односвязного списка (взята с урока):
+// ниже реализация односвязного списка (взята с урока):
 #define T char
 #define True 1 == 1
 #define False 1 != 1
@@ -28,29 +26,7 @@ void initOneLinkList(OneLinkList* lst)
     lst->size = 0;
 }
 
-void printOneLinkCharNode(OneLinkNode* n)
-{
-    if (n == NULL) {
-        printf(" ");
-        return;
-    }
-    printf("%c", n->dat);
-}
-
-void printOneLinkCharList(OneLinkList* lst)
-{
-    OneLinkNode* current = lst->head;
-    if (current == NULL) {
-        printOneLinkCharNode(current);
-    }
-    else {
-        do {
-            printOneLinkCharNode(current);
-            current = current->next;
-        } while (current != NULL);
-    }
-    printf(" Size: %d \n", lst->size);
-}
+///////////////////////////////// ЗАДАНИЕ 1
 
 boolean pushOneLinkStack(OneLinkList* stack, char value)
 {
@@ -129,11 +105,109 @@ void task1()
     printf("\n\n");
 }
 
+///////////////////////////////// ЗАДАНИЕ 2
+
+void insert(OneLinkList *lst, int data) 
+{
+    OneLinkNode *new_node = (OneLinkNode*) malloc(sizeof(OneLinkNode));
+    new_node->dat = data;
+    new_node->next = NULL;
+
+    OneLinkNode *current = lst->head;
+    if (current == NULL) {
+        lst->head = new_node;
+        lst->size++;
+    } else {
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = new_node;
+        lst->size++;
+    }
+}
+
+OneLinkNode* rm(OneLinkList *lst, int data) {
+    OneLinkNode *current = lst->head;
+    OneLinkNode *parent = NULL;
+    if (current == NULL)
+        return NULL;
+
+    while (current->next != NULL && current->dat != data) {
+        parent = current;
+        current = current->next;
+    }
+    if (current->dat != data) {
+        return NULL;
+    }
+    if (current == lst->head) {
+        lst->head = current->next;
+        lst->size--;
+        return current;
+    }
+    parent->next = current->next;
+    lst->size--;
+    return current;
+}
+
+void printOneLinkCharNode(OneLinkNode* n)
+{
+    if (n == NULL) {
+        printf("[ ]");
+        return;
+    }
+    printf("[%c]", n->dat);
+}
+
+void printOneLinkCharList(OneLinkList* lst)
+{
+    OneLinkNode* current = lst->head;
+    if (current == NULL) {
+        printOneLinkCharNode(current);
+    }
+    else {
+        do {
+            printOneLinkCharNode(current);
+            current = current->next;
+        } while (current != NULL);
+    }
+    printf(" Size: %d \n", lst->size);
+}
+
+// создаёт функцию, копирующую односвязный список (без удаления первого списка)
+void task2()
+{
+    printf("2. Копирование односвязного списка\n");
+    printf("Исходный список:\n");
+    OneLinkList* lst = (OneLinkList*)malloc(sizeof(OneLinkList));
+    initOneLinkList(lst);
+    insert(lst, 97);
+    insert(lst, 98);
+    insert(lst, 99);
+    insert(lst, 100);
+    insert(lst, 101);
+    insert(lst, 102);
+    printOneLinkCharList(lst);
+
+    printf("Скопированный список:\n");
+    OneLinkList* copy_lst = (OneLinkList*)malloc(sizeof(OneLinkList));
+    initOneLinkList(copy_lst);
+    OneLinkNode* current = lst->head;
+    while (current != NULL)
+    {
+        insert(copy_lst, current->dat);
+        current = current->next;
+    }
+    printOneLinkCharList(copy_lst);
+    free(current); // а память для списков по традиции оставляем неосвобождённой
+
+    printf("\n\n");
+}
+
 int main()
 {
     setlocale(LC_CTYPE, "rus");  // для кириллицы
     task1();
-    //task2();
+    task2();
     //task3();
     return 0;
 }
