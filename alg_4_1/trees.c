@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
-#include <math.h>
+#include <math.h>     // для abs()
+#include <time.h>     // для генерации случайных чисел
+
 
 /////////////////////////// НИЖЕ НУЖНЫЙ КОД С УРОКОВ
 #define True (1 == 1)
@@ -256,6 +258,7 @@ boolean binSearch(BinTreeIntNode* root, int value)
             return False;
     }
 }
+//!!!ЗДЕСЬ ЗАКАНЧИВАЕТСЯ НЕ МОЙ КОД И НАЧИНАЕТСЯ МОЙ!!!
 
 /////////////////////////// ЗАДАНИЕ 1
 
@@ -281,8 +284,12 @@ boolean check_balance(BinTreeIntNode* tree)
 {
     if (tree->left == NULL && tree->right == NULL)
         return True;
-    if (abs(get_height(tree->right) - get_height(tree->right)) <= 1)
+    
+    int left_height = get_height(tree->left);
+    int right_height = get_height(tree->right);
+    if (abs(left_height- right_height) <= 1)
         return True;
+    
     return False;
 }
 
@@ -324,9 +331,119 @@ void task1()
     printf(" \n");
 }
 
+/////////////////////////// ЗАДАНИЕ 2
+
+// рекурсивная функция построения случайного бинарного дерева. 
+// принимает ссылку на максимальное количество вершин и максимальное значение ключа 
+BinTreeIntNode* build_random_binary_tree(int* max_nodes, const int max_value)
+{
+    if (*max_nodes <= 0)
+        return NULL;
+
+    BinTreeIntNode* root = (BinTreeIntNode*)malloc(sizeof(BinTreeIntNode));
+    root->key = rand() % max_value;
+    --(*max_nodes);
+
+    // случайным образом определяем количество ветвей для этого корня. Но ограничиваемся оставшимся количеством вершин:
+    int children = (*max_nodes > 1)?(rand() % 3):((*max_nodes == 1)?1:0);
+
+    if (children == 0)
+    {
+        root->left = NULL;
+        root->right = NULL;
+        return root;
+    }
+    else if (children == 1)
+    {
+        // случайно определяем, правое или левое дерево строим
+        if (rand() % 2)
+        {
+            root->left = NULL;
+            root->right = build_random_binary_tree(max_nodes, max_value);
+        }  
+        else
+        {
+            root->right = NULL;
+            root->left = build_random_binary_tree(max_nodes, max_value);
+        }
+    }
+    else // строим оба поддерева
+    {
+        root->left = build_random_binary_tree(max_nodes, max_value);
+        root->right = build_random_binary_tree(max_nodes, max_value);
+    }
+    return root;
+}
+
+// находит случайную "нулевую" вершину и достраивает в неё дерево
+void complete_random_null_branch(BinTreeIntNode* root, int* max_nodes, const int max_value)
+{
+    BinTreeIntNode* current = root; // изначально дерево не пустое, так как эта функция вызывается именно для достраивания 
+    while (current != NULL) // ищем нулевую вершину
+    {
+        if ((current->right == NULL) && (current->left == NULL))
+        {
+            if (rand() % 2)
+            {
+                current->left = build_random_binary_tree(max_nodes, max_value);
+                return;
+            }
+            else
+            {
+                current->right = build_random_binary_tree(max_nodes, max_value);
+                return;
+            }
+        }
+        else if (current->left == NULL)
+        {
+            current->left = build_random_binary_tree(max_nodes, max_value);
+            return;
+        }
+            
+        else if (current->right == NULL)
+        {
+            current->right = build_random_binary_tree(max_nodes, max_value);
+            return;
+        }
+        else
+        {
+            if (rand() % 2)
+                current = current->right;
+            else
+                current = current->left;
+        }
+    }
+}
+
+// создание множества случайных бинарных деревьев, подсчёт процента сбалансированных
+void task2()
+{
+    const int TREES = 50;
+    const int MAX_VALUE = 100;
+    const int NODES = 10000;
+
+    printf("2. Создаём %d случайных бинарных деревьев по %d вершин в каждом.\n", TREES, NODES);
+    int balanced_trees = 0;
+    for (int tree_idx = 0; tree_idx < TREES; ++tree_idx)
+    {
+        int nodes_number = NODES;
+
+        BinTreeIntNode* random_tree = build_random_binary_tree(&nodes_number, MAX_VALUE);
+        while (nodes_number > 0)
+            complete_random_null_branch(random_tree, &nodes_number, MAX_VALUE);
+        
+        if (check_balance(random_tree))
+            ++balanced_trees;
+    }
+
+    printf("%% сбалансированных деревьев: %.2lf (%d из %d).\n\n", 100*((double)(balanced_trees) / TREES), balanced_trees, TREES);
+}
+
 int main()
 {
     setlocale(LC_CTYPE, "rus");  // для кириллицы
+    srand(time(NULL));           // типа randomize, чтобы с каждым запуском программы генерировались разные числа
     task1();
+    task2();
     return 0;
 }
