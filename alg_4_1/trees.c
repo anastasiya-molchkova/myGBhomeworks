@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <math.h>     // для abs()
-#include <time.h>     // для генерации случайных чисел
-
 
 /////////////////////////// НИЖЕ НУЖНЫЙ КОД С УРОКОВ
 #define True (1 == 1)
@@ -216,7 +214,7 @@ void postOrderTravers(BinTreeIntNode* root)
 }
 
 // построение сбалансированного дерева со случайными числами в вершинах
-BinTreeIntNode* balancedTree(int n)
+BinTreeIntNode* balancedTree(int n, const int max_value)
 {
     BinTreeIntNode* newNode;
     int x;
@@ -227,13 +225,13 @@ BinTreeIntNode* balancedTree(int n)
         return NULL;
     else
     {
-        x = rand() % 100;
+        x = rand() % max_value;
         nL = n / 2;
         nR = n - nL - 1;
         newNode = (BinTreeIntNode*)malloc(sizeof(BinTreeIntNode));
         newNode->key = x;
-        newNode->left = balancedTree(nL);
-        newNode->right = balancedTree(nR);
+        newNode->left = balancedTree(nL, max_value);
+        newNode->right = balancedTree(nR, max_value);
     }
     return newNode;
 }
@@ -282,7 +280,7 @@ int get_height(BinTreeIntNode* tree)
 // проверяет простую сбалансированность переданного бинарного дерева (высоты двух поддеревьев отличаются не больше, чем на 1)
 boolean check_balance(BinTreeIntNode* tree)
 {
-    if (tree->left == NULL && tree->right == NULL)
+    if ((tree->left == NULL) && (tree->right == NULL))
         return True;
     
     int left_height = get_height(tree->left);
@@ -324,7 +322,7 @@ void task1()
     const int nodes = 15;
     printf("Создадим сбалансированное дерево из %d вершин:\n", nodes);
     BinTreeIntNode* balanced_tree = NULL;
-    balanced_tree = balancedTree(nodes);
+    balanced_tree = balancedTree(nodes, 100);
     printBinTree(balanced_tree);
     printf("\nВысота дерева %d\n", get_height(balanced_tree));
     printf("Дерево сбалансировано - это %s\n", check_balance(balanced_tree) ? "истина" : "ложь");
@@ -338,8 +336,9 @@ void task1()
 BinTreeIntNode* build_random_binary_tree(int* max_nodes, const int max_value)
 {
     if (*max_nodes <= 0)
-        return NULL;
+        return NULL;     // иначе мы можем наплодить лишних вершин (из-за рекурсивности ниже)
 
+    // сначала делаем корень дерева/поддерева:
     BinTreeIntNode* root = (BinTreeIntNode*)malloc(sizeof(BinTreeIntNode));
     root->key = rand() % max_value;
     --(*max_nodes);
@@ -347,6 +346,7 @@ BinTreeIntNode* build_random_binary_tree(int* max_nodes, const int max_value)
     // случайным образом определяем количество ветвей для этого корня. Но ограничиваемся оставшимся количеством вершин:
     int children = (*max_nodes > 1)?(rand() % 3):((*max_nodes == 1)?1:0);
 
+    // и далее поступаем в зависимости от того, сколько нужно ветвей:
     if (children == 0)
     {
         root->left = NULL;
@@ -354,8 +354,7 @@ BinTreeIntNode* build_random_binary_tree(int* max_nodes, const int max_value)
         return root;
     }
     else if (children == 1)
-    {
-        // случайно определяем, правое или левое дерево строим
+    {   // случайно определяем, правое или левое дерево строим
         if (rand() % 2)
         {
             root->left = NULL;
@@ -372,40 +371,36 @@ BinTreeIntNode* build_random_binary_tree(int* max_nodes, const int max_value)
         root->left = build_random_binary_tree(max_nodes, max_value);
         root->right = build_random_binary_tree(max_nodes, max_value);
     }
+
     return root;
 }
 
-// находит случайную "нулевую" вершину и достраивает в неё дерево
+// достраивает дерево в случайную "нулевую" вершину
+// на вход принимает более менее отстроенное дерево, ограничение на оставшееся количество вершин и максимальное значение ключа
 void complete_random_null_branch(BinTreeIntNode* root, int* max_nodes, const int max_value)
 {
     BinTreeIntNode* current = root; // изначально дерево не пустое, так как эта функция вызывается именно для достраивания 
-    while (current != NULL) // ищем нулевую вершину
+    while (True)         // ищем нулевую вершину
     {
         if ((current->right == NULL) && (current->left == NULL))
-        {
+        { // оба поддерева пустые, выбираем одно из них для достраивания случайным образом
             if (rand() % 2)
-            {
                 current->left = build_random_binary_tree(max_nodes, max_value);
-                return;
-            }
             else
-            {
                 current->right = build_random_binary_tree(max_nodes, max_value);
-                return;
-            }
+            return;
         }
-        else if (current->left == NULL)
+        else if (current->left == NULL)  // только левое - нулевое
         {
             current->left = build_random_binary_tree(max_nodes, max_value);
             return;
         }
-            
-        else if (current->right == NULL)
+        else if (current->right == NULL) // только правое - нулевое
         {
             current->right = build_random_binary_tree(max_nodes, max_value);
             return;
         }
-        else
+        else  // оба поддерева - не пустые выбираем одно из них случайным образом и спускаемся ниже
         {
             if (rand() % 2)
                 current = current->right;
@@ -413,37 +408,101 @@ void complete_random_null_branch(BinTreeIntNode* root, int* max_nodes, const int
                 current = current->left;
         }
     }
+    /* // Пыталась упростить эту функцию и переписать её следующим образом:
+    while (current != NULL)                    // ищем нулевую вершину
+    {
+        if ((current->left == NULL) && (current->right != NULL))      // только левое - нулевое
+            current = current->left;
+        else if ((current->right == NULL) && (current->left != NULL)) // только правое - нулевое
+            current = current->right;
+        else // оба поддерева - не пустые или оба пустые, выбираем одно из них случайным образом
+        {
+            if (rand() % 2)
+                current = current->left;
+            else
+                current = current->right;
+        }
+    }
+    // current == NULL
+    current = build_random_binary_tree(max_nodes, max_value);
+    // но так ничего не выходит. Отстроенное по нулевому указателю дерево сразу как будто "забывается" */
+}
+
+// создаёт случайное бинарное дерево поиска
+BinTreeIntNode* get_random_search_tree(const int max_nodes, const int max_value)
+{
+    BinTreeIntNode* tree = NULL;
+    tree = treeInsert(tree, rand() % max_value);
+    for (int node = 1; node < max_nodes; ++node)
+        treeInsert(tree, rand() % max_value);
+    return tree;
 }
 
 // создание множества случайных бинарных деревьев, подсчёт процента сбалансированных
 void task2()
 {
-    const int TREES = 50;
-    const int MAX_VALUE = 100;
-    const int NODES = 10000;
+    const int TREES = 100;
+    const int MAX_VALUE = 1000;
+    const int NODES = 1000;
 
     printf("2. Создаём %d случайных бинарных деревьев по %d вершин в каждом.\n", TREES, NODES);
     int balanced_trees = 0;
     for (int tree_idx = 0; tree_idx < TREES; ++tree_idx)
     {
-        int nodes_number = NODES;
+        int nodes_number = NODES;    // для каждого дерева свой независимый набор вершин
 
         BinTreeIntNode* random_tree = build_random_binary_tree(&nodes_number, MAX_VALUE);
-        while (nodes_number > 0)
+        while (nodes_number > 0)     // чтобы создать ровно столько вершин, сколько нужно
             complete_random_null_branch(random_tree, &nodes_number, MAX_VALUE);
+        
+        // ИЛИ как вариант создать случайные деревья поиска, тогда % сбалансированных будет больше:
+        // BinTreeIntNode* random_tree = get_random_search_tree(nodes_number, MAX_VALUE);
         
         if (check_balance(random_tree))
             ++balanced_trees;
     }
 
-    printf("%% сбалансированных деревьев: %.2lf (%d из %d).\n\n", 100*((double)(balanced_trees) / TREES), balanced_trees, TREES);
+    printf("Получено %.2lf%% сбалансированных деревьев (%d из %d).\n\n", 100*((double)(balanced_trees) / TREES), balanced_trees, TREES);
+}
+
+/////////////////////////// ЗАДАНИЕ 3
+
+// бинарный поиск в двоичном дереве поиска, реализованный рекурсивно. Возвращает False, если значение не найдено
+boolean binSearchRec(BinTreeIntNode* tree, const int value)
+{
+    if (tree == NULL)
+        return False;
+    if (tree->key == value)
+        return True;
+
+    BinTreeIntNode* current = tree;
+    
+    if (value < tree->key)
+        return binSearchRec(tree->left, value);
+    else
+        return binSearchRec(tree->right, value);
+}
+
+// проверяет рекурсивную функцию бинарного поиска на случайном дереве поиска
+void task3()
+{
+    printf("3. Создаём случайное дерево поиска.\n");
+
+    BinTreeIntNode* search_tree = get_random_search_tree(30, 100);
+    printBinTree(search_tree);
+    printf(" \n");
+
+    int search_value1 = 70;
+    printf("%d %s в этом дереве \n", search_value1, binSearchRec(search_tree, search_value1) ? "есть" : "нет");
+    int search_value2 = 50;
+    printf("%d %s в этом дереве \n\n", search_value2, binSearchRec(search_tree, search_value2) ? "есть" : "нет");
 }
 
 int main()
 {
     setlocale(LC_CTYPE, "rus");  // для кириллицы
-    srand(time(NULL));           // типа randomize, чтобы с каждым запуском программы генерировались разные числа
     task1();
     task2();
+    task3();
     return 0;
 }
