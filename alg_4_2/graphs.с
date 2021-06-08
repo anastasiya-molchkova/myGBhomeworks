@@ -195,9 +195,138 @@ void task1()
     printf("\n\n");
 }
 
+///////////////////// ЗАДАНИЕ 2
+
+// создаёт матрицу смежности для простого графа (без кратных рёбер и петель)
+int** initSimpleGraph(const int nodes)
+{
+    int** array = (int**)calloc(nodes, sizeof(int*));
+    for (int i = 0; i < nodes; ++i)
+        *(array + i) = (int*)calloc(nodes, sizeof(int*));
+    
+    for (int i = 0; i < nodes; ++i)
+        for (int j = 0; j < nodes; ++j)
+        {
+            if (i < j)
+                set2dInt(array, i, j, rand() % 2);
+            else if (i > j)
+                set2dInt(array, i, j, get2dInt(array, j, i));
+            // иначе (i == j) - петля, оставляем 0
+        }
+            
+    return array;
+}
+
+void widthTraversRecursive(int** matrix, int* visited, const int size, int start, int* number_of_visited)
+{
+    if (!visited[start])
+    {
+        ++visited[start];
+        ++(*number_of_visited);
+        printf("%d ", start);
+    }
+
+    for (int next = 0; next < size; ++next)
+    {
+        if ((get2dInt(matrix, start, next) == 1) && !visited[next])
+        {
+            ++visited[next];
+            printf("%d ", next);
+            ++(*number_of_visited);
+        }
+        if (*number_of_visited < size)
+            for (int adj = 0; adj < size; ++adj)
+                if (adj != start && visited[adj])
+                {
+                    widthTraversRecursive(matrix, visited, size, start, number_of_visited);
+                    if (*number_of_visited >= size)
+                        return;
+                }
+    }
+}
+
+int* TraversByMatrix(int** matrix, const int size)
+{
+    int* visited = (int*)calloc(size, sizeof(int));  // изначально массив обнулён
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
+            if (get2dInt(matrix, i, j) == 1)
+                ++visited[j];
+    return visited;
+}
+
+typedef struct
+{
+    int node;
+    int edges;
+} NodeEdges;
+
+// сортирует массив сортировкой вставками
+void sort_by_inserts(NodeEdges* array, int len)
+{
+    NodeEdges temp;
+    int pos;
+    for (int i = 1; i < len; ++i)
+    {
+        temp.node = array[i].node;
+        temp.edges = array[i].edges;
+        pos = i - 1;
+        while (pos >= 0 && array[pos].edges < temp.edges)
+        {
+            array[pos + 1].node = array[pos].node;
+            array[pos + 1].edges = array[pos].edges;
+            pos--;
+        }
+        array[pos + 1].node = temp.node;
+        array[pos + 1].edges = temp.edges;
+    }
+}
+
+void printNodeEdge(NodeEdges* a)
+{
+    printf("вершина %d - %d рёбер\n", a->node, a->edges);
+}
+
+void printResult(NodeEdges* array, int len)
+{
+    for (int i = 0; i < len; ++i)
+        printNodeEdge(array+i);
+}
+
+// создаёт случайный простой граф для заданного количества вершин и обходит его двумя способами с подсчётом количества ссылок на каждую вершину
+void task2()
+{
+    printf("2. Обход простого графа рекурсивно.\n\n");
+
+    const int nodes = 5;
+    int** graph = initSimpleGraph(nodes);
+    printAdjMatrix(graph, nodes);
+
+    // также нам понадобится массив посещённых вершин. Там единицей будем помечать посещённые вершины
+    int* visited = (int*)calloc(nodes, sizeof(int));  // изначально массив обнулён
+    int number_of_visited = 0;
+    printf("Путь из начальной вершины:\n");
+    //widthTraversRecursive(graph, visited, nodes, 0, &number_of_visited);
+
+    printf("\n\n");
+
+    printf("3. Обход простого графа по матрице смежности.\n\n");
+    int* edges = TraversByMatrix(graph, nodes);
+    NodeEdges*  result2 = (NodeEdges*)calloc(nodes, sizeof(NodeEdges));
+    for (int i = 0; i < nodes; ++i)
+    {
+        result2[i].node = i;
+        result2[i].edges = edges[i];
+    }
+    sort_by_inserts(result2, nodes);
+    printResult(result2, nodes);
+    printf("\n\n");
+}
+
 int main()
 {
     setlocale(LC_CTYPE, "rus");  // для кириллицы
     task1();
+    task2();
     return 0;
 }
