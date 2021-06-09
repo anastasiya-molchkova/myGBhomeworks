@@ -52,7 +52,7 @@ void set2dInt(int** array, const int row, const int col, int value)
     *((*(array + row)) + col) = value;
 }
 
-// СТЭК
+// СТЭК на основе односвязного списка (взято из репозитория)
 
 #define T int
 
@@ -125,6 +125,91 @@ T popOneLinkStack(OneLinkList* stack) {
     return data;
 }
 
+// ОЧЕРЕДЬ НА ОСНОВЕ ДВУСВЯЗНОГО СПИСКА (взято из репозитория)
+
+typedef struct TwoLinkNode {
+    int dat;
+    struct TwoLinkNode* next;
+    struct TwoLinkNode* prev;
+} TwoLinkNode;
+
+typedef struct {
+    struct TwoLinkNode* head;
+    struct TwoLinkNode* tail;
+    int size;
+} TwoLinkList;
+
+void initTwoLinkList(TwoLinkList* lst) {
+    lst->head = NULL;
+    lst->tail = NULL;
+    lst->size = 0;
+}
+void printTwoLinkIntNode(TwoLinkNode* n) {
+    if (n == NULL) {
+        printf("[]");
+        return;
+    }
+    printf("[%d]", n->dat);
+}
+void printTwoLinkIntList(TwoLinkList* lst) {
+    TwoLinkNode* current = lst->head;
+    if (current == NULL) {
+        printTwoLinkIntNode(current);
+    }
+    else {
+        do {
+            printTwoLinkIntNode(current);
+            current = current->next;
+        } while (current != NULL);
+    }
+    printf(" Size: %d \n", lst->size);
+}
+
+boolean TwoLinkEnqueue(TwoLinkList* queue, T value) {
+    TwoLinkNode* tmp = (TwoLinkNode*)malloc(sizeof(TwoLinkNode));
+    if (tmp == NULL) {
+        printf("Out of memory! \n");
+        return false;
+    }
+    tmp->dat = value;
+    tmp->next = NULL;
+    tmp->prev = queue->tail;
+
+    if (queue->tail != NULL) {
+        queue->tail->next = tmp;
+    }
+    if (queue->head == NULL) {
+        queue->head = tmp;
+    }
+
+    queue->tail = tmp;
+    queue->size++;
+    return true;
+}
+
+T TwoLinkDequeue(TwoLinkList* queue) {
+    if (queue->size == 0) {
+        printf("Queue is empty \n");
+        return -1;
+    }
+    TwoLinkNode* tmp = queue->head;
+    T data = queue->head->dat;
+
+    queue->head = queue->head->next;
+
+    if (queue->head != NULL) {
+        queue->head->prev = NULL;
+    }
+    if (tmp == queue->tail) {
+        queue->tail = NULL;
+    }
+
+    free(tmp);
+    queue->size--;
+    return data;
+}
+// ЗДЕСЬ ЗАКАНЧИВАЕТСЯ ЗАИМСТВОВАННЫЙ КОД И НАЧИНАЕТСЯ МОЙ
+
 ///////////////////// ЗАДАНИЕ 1
 
 // печатает матрицу смежности
@@ -145,7 +230,7 @@ void printAdjMatrix(int** array, int nodes)
     }
 }
 
-// обход графа в глубину. На входе матрица смежности, количество вершин и стартовая вершина для обхода:
+// обход графа в глубину со стэком. На входе матрица смежности, количество вершин и стартовая вершина для обхода:
 void depthTravers(int** matrix, const int nodes, const int start)
 {
     // в стэке будем держать вершины, для которых нужно обойти смежные
@@ -217,51 +302,40 @@ int** initSimpleGraph(const int nodes)
     return array;
 }
 
-void widthTraversRecursive(int** matrix, int* visited, const int size, int start, int* number_of_visited)
+// рекурсивная функция обхода графа в ширину, количество подсчётов захода в каждую вершину считается в массиве visited
+void widthTraversRecursive(int** matrix, TwoLinkList* queue, int* visited, int start, const int size)
 {
-    if (!visited[start])
-    {
-        ++visited[start];
-        ++(*number_of_visited);
-        printf("%d ", start);
-    }
-
+    ++visited[start];
+    
+    // ищем смежные непосещённые вершины и ставим их в очередь
     for (int next = 0; next < size; ++next)
-    {
         if ((get2dInt(matrix, start, next) == 1) && !visited[next])
-        {
-            ++visited[next];
-            printf("%d ", next);
-            ++(*number_of_visited);
-        }
-        if (*number_of_visited < size)
-            for (int adj = 0; adj < size; ++adj)
-                if (adj != start && visited[adj])
-                {
-                    widthTraversRecursive(matrix, visited, size, start, number_of_visited);
-                    if (*number_of_visited >= size)
-                        return;
-                }
-    }
+            TwoLinkEnqueue(queue, next);
+    
+    // переходим к следующей вершине в очереди
+    if (queue->size > 0)
+        widthTraversRecursive(matrix, queue, visited, TwoLinkDequeue(queue), size);
 }
 
+// обход графа по матрице смежности с подсчётом рёбер для каждой вершины (полустепень захода)
 int* TraversByMatrix(int** matrix, const int size)
 {
     int* visited = (int*)calloc(size, sizeof(int));  // изначально массив обнулён
     for (int i = 0; i < size; ++i)
         for (int j = 0; j < size; ++j)
             if (get2dInt(matrix, i, j) == 1)
-                ++visited[j];
+                ++visited[j]; // т.к. матрица симметрична относительно диагонали считаем рёбра только как входящие
     return visited;
 }
 
+// структура номер вершины - количество смежных с ней рёбер 
 typedef struct
 {
     int node;
     int edges;
 } NodeEdges;
 
-// сортирует массив сортировкой вставками
+// сортирует массив вершин сортировкой вставками от наибольшего количества рёбер к наименьшему
 void sort_by_inserts(NodeEdges* array, int len)
 {
     NodeEdges temp;
@@ -282,47 +356,61 @@ void sort_by_inserts(NodeEdges* array, int len)
     }
 }
 
+// выводит на экран номер вершины и количество смежных с ней рёбер
 void printNodeEdge(NodeEdges* a)
 {
     printf("вершина %d - %d рёбер\n", a->node, a->edges);
 }
 
+// выводит на экран список вершин и количество смежных с ними рёбер
 void printResult(NodeEdges* array, int len)
 {
     for (int i = 0; i < len; ++i)
         printNodeEdge(array+i);
 }
 
+// обрабатывает входящий массив полустепеней захода - сортирует и печатает
+void makeTraversResult(int* array, const int nodes)
+{
+    // результатом должен стать список номеров вершин и количеств входящих рёбер, отсортированный по убыванию
+    // поэтому, чтобы не потерять номера вершин, переделаем массив в массив структур "номер вершины - количество рёбер"
+    NodeEdges* result = (NodeEdges*)calloc(nodes, sizeof(NodeEdges));
+    for (int i = 0; i < nodes; ++i)
+    {
+        result[i].node = i;
+        result[i].edges = array[i];
+    }
+    sort_by_inserts(result, nodes);
+    printResult(result, nodes);
+    printf("\n\n");
+}
+
 // создаёт случайный простой граф для заданного количества вершин и обходит его двумя способами с подсчётом количества ссылок на каждую вершину
 void task2()
 {
-    printf("2. Обход простого графа рекурсивно.\n\n");
-
+    // задаём граф количеством вершин, генерируем матрицу смежности по условию
     const int nodes = 5;
     int** graph = initSimpleGraph(nodes);
     printAdjMatrix(graph, nodes);
 
-    // также нам понадобится массив посещённых вершин. Там единицей будем помечать посещённые вершины
+    printf("\n2. Обход простого графа рекурсивно.\n\n");
+    
+    // нам понадобится массив для отметки посещённых вершин
     int* visited = (int*)calloc(nodes, sizeof(int));  // изначально массив обнулён
-    int number_of_visited = 0;
-    printf("Путь из начальной вершины:\n");
-    //widthTraversRecursive(graph, visited, nodes, 0, &number_of_visited);
+    // очередь из вершин должна не зависить от экземпляра функции, поэтому создаём её здесь
+    TwoLinkList* queue = (TwoLinkList*)malloc(sizeof(TwoLinkList));
+    initTwoLinkList(queue);
 
-    printf("\n\n");
+    widthTraversRecursive(graph, queue, visited, 0, nodes);
+    makeTraversResult(visited, nodes);
 
     printf("3. Обход простого графа по матрице смежности.\n\n");
+
     int* edges = TraversByMatrix(graph, nodes);
-    NodeEdges*  result2 = (NodeEdges*)calloc(nodes, sizeof(NodeEdges));
-    for (int i = 0; i < nodes; ++i)
-    {
-        result2[i].node = i;
-        result2[i].edges = edges[i];
-    }
-    sort_by_inserts(result2, nodes);
-    printResult(result2, nodes);
-    printf("\n\n");
+    makeTraversResult(edges, nodes);
 }
 
+// а вот и MAIN
 int main()
 {
     setlocale(LC_CTYPE, "rus");  // для кириллицы
