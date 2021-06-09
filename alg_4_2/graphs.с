@@ -9,21 +9,6 @@
 
 typedef int boolean;
 
-// заполняет массив случайными числами
-void fillArrayRandom(int* array, int len, const unsigned max)
-{
-    for (int i = 0; i < len; ++i)
-        array[i] = rand() % max;
-}
-
-// печатает массив
-void printArray(int* array, int len)
-{
-    for (int i = 0; i < len; ++i)
-        printf("%4d ", array[i]);
-    printf("\n");
-}
-
 // создаёт 2D массив
 int** init2DArray(int rows, int cols)
 {
@@ -41,13 +26,13 @@ void fill2DarrayRandom(int** array, int rows, int cols, const unsigned max)
             *(*(array + i) + j) = rand() % max;
 }
 
-int get2dInt(int** array, const int row, const int col) 
+int get2dInt(int** array, const int row, const int col)
 {
     return *((*(array + row)) + col);
 
 }
 
-void set2dInt(int** array, const int row, const int col, int value) 
+void set2dInt(int** array, const int row, const int col, int value)
 {
     *((*(array + row)) + col) = value;
 }
@@ -56,46 +41,22 @@ void set2dInt(int** array, const int row, const int col, int value)
 
 #define T int
 
-typedef struct OneLinkNode 
+typedef struct OneLinkNode
 {
     int data;
     struct OneLinkNode* next;
 } OneLinkNode;
 
-typedef struct 
+typedef struct
 {
     OneLinkNode* head;
     int size;
 } OneLinkList;
 
-void initOneLinkList(OneLinkList* lst) 
+void initOneLinkList(OneLinkList* lst)
 {
     lst->head = NULL;
     lst->size = 0;
-}
-
-void printOneLinkIntNode(OneLinkNode* n) 
-{
-    if (n == NULL) {
-        printf("[]");
-        return;
-    }
-    printf("[%d]", n->data);
-}
-
-void printOneLinkIntList(OneLinkList* lst) 
-{
-    OneLinkNode* current = lst->head;
-    if (current == NULL) {
-        printOneLinkIntNode(current);
-    }
-    else {
-        do {
-            printOneLinkIntNode(current);
-            current = current->next;
-        } while (current != NULL);
-    }
-    printf(" Size: %d \n", lst->size);
 }
 
 boolean pushOneLinkStack(OneLinkList* stack, T value) {
@@ -144,27 +105,8 @@ void initTwoLinkList(TwoLinkList* lst) {
     lst->tail = NULL;
     lst->size = 0;
 }
-void printTwoLinkIntNode(TwoLinkNode* n) {
-    if (n == NULL) {
-        printf("[]");
-        return;
-    }
-    printf("[%d]", n->dat);
-}
-void printTwoLinkIntList(TwoLinkList* lst) {
-    TwoLinkNode* current = lst->head;
-    if (current == NULL) {
-        printTwoLinkIntNode(current);
-    }
-    else {
-        do {
-            printTwoLinkIntNode(current);
-            current = current->next;
-        } while (current != NULL);
-    }
-    printf(" Size: %d \n", lst->size);
-}
 
+// добавление элемента в хвост очереди
 boolean TwoLinkEnqueue(TwoLinkList* queue, T value) {
     TwoLinkNode* tmp = (TwoLinkNode*)malloc(sizeof(TwoLinkNode));
     if (tmp == NULL) {
@@ -187,6 +129,7 @@ boolean TwoLinkEnqueue(TwoLinkList* queue, T value) {
     return true;
 }
 
+// извлечение элемента из головы очереди
 T TwoLinkDequeue(TwoLinkList* queue) {
     if (queue->size == 0) {
         printf("Queue is empty \n");
@@ -258,6 +201,8 @@ void depthTravers(int** matrix, const int nodes, const int start)
                 pushOneLinkStack(stack, next_node);
             }
     }
+
+    free(stack);
 }
 
 // создаёт случайный граф для заданного количества вершин и обходит его в глубину из нескольких вершин
@@ -278,17 +223,22 @@ void task1()
     depthTravers(graph, nodes, 4);
 
     printf("\n\n");
+
+    // освобождаем выделенную под граф память:
+    for (int i = 0; i < nodes; ++i)
+        free(graph[i]);
+    free(graph);
 }
 
 ///////////////////// ЗАДАНИЕ 2
 
-// создаёт матрицу смежности для простого графа (без кратных рёбер и петель)
+// создаёт симметричную матрицу смежности для простого графа (без кратных рёбер и петель)
 int** initSimpleGraph(const int nodes)
 {
     int** array = (int**)calloc(nodes, sizeof(int*));
     for (int i = 0; i < nodes; ++i)
         *(array + i) = (int*)calloc(nodes, sizeof(int*));
-    
+
     for (int i = 0; i < nodes; ++i)
         for (int j = 0; j < nodes; ++j)
         {
@@ -298,7 +248,7 @@ int** initSimpleGraph(const int nodes)
                 set2dInt(array, i, j, get2dInt(array, j, i));
             // иначе (i == j) - петля, оставляем 0
         }
-            
+
     return array;
 }
 
@@ -306,12 +256,12 @@ int** initSimpleGraph(const int nodes)
 void widthTraversRecursive(int** matrix, TwoLinkList* queue, int* visited, int start, const int size)
 {
     ++visited[start];
-    
+
     // ищем смежные непосещённые вершины и ставим их в очередь
     for (int next = 0; next < size; ++next)
         if ((get2dInt(matrix, start, next) == 1) && !visited[next])
             TwoLinkEnqueue(queue, next);
-    
+
     // переходим к следующей вершине в очереди
     if (queue->size > 0)
         widthTraversRecursive(matrix, queue, visited, TwoLinkDequeue(queue), size);
@@ -366,7 +316,7 @@ void printNodeEdge(NodeEdges* a)
 void printResult(NodeEdges* array, int len)
 {
     for (int i = 0; i < len; ++i)
-        printNodeEdge(array+i);
+        printNodeEdge(array + i);
 }
 
 // обрабатывает входящий массив полустепеней захода - сортирует и печатает
@@ -383,18 +333,19 @@ void makeTraversResult(int* array, const int nodes)
     sort_by_inserts(result, nodes);
     printResult(result, nodes);
     printf("\n\n");
+    free(result);
 }
 
-// создаёт случайный простой граф для заданного количества вершин и обходит его двумя способами с подсчётом количества ссылок на каждую вершину
+// создаёт случайный простой граф для заданного количества вершин, обходит его двумя способами с подсчётом количества ссылок на каждую вершину
 void task2()
 {
     // задаём граф количеством вершин, генерируем матрицу смежности по условию
-    const int nodes = 5;
+    const int nodes = 8;
     int** graph = initSimpleGraph(nodes);
     printAdjMatrix(graph, nodes);
 
     printf("\n2. Обход простого графа рекурсивно.\n\n");
-    
+
     // нам понадобится массив для отметки посещённых вершин
     int* visited = (int*)calloc(nodes, sizeof(int));  // изначально массив обнулён
     // очередь из вершин должна не зависить от экземпляра функции, поэтому создаём её здесь
@@ -408,6 +359,15 @@ void task2()
 
     int* edges = TraversByMatrix(graph, nodes);
     makeTraversResult(edges, nodes);
+
+    // финальная зачистка:
+    free(visited);
+    free(edges);
+    free(queue);
+    // освобождаем выделенную под граф память:
+    for (int i = 0; i < nodes; ++i)
+        free(graph[i]);
+    free(graph);
 }
 
 // а вот и MAIN
