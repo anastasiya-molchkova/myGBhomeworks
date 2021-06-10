@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <locale.h>  // для кириллицы
 
-// НУЖНЫЙ КОД С УРОКОВ:
+      // НУЖНЫЙ КОД С УРОКОВ:
 
 #define True (1 == 1)
 #define False (1 != 1)
@@ -29,7 +29,6 @@ void fill2DarrayRandom(int** array, int rows, int cols, const unsigned max)
 int get2dInt(int** array, const int row, const int col)
 {
     return *((*(array + row)) + col);
-
 }
 
 void set2dInt(int** array, const int row, const int col, int value)
@@ -248,19 +247,22 @@ int** initSimpleGraph(const int nodes)
                 set2dInt(array, i, j, get2dInt(array, j, i));
             // иначе (i == j) - петля, оставляем 0
         }
-
     return array;
 }
 
 // рекурсивная функция обхода графа в ширину, количество подсчётов захода в каждую вершину считается в массиве visited
 void widthTraversRecursive(int** matrix, TwoLinkList* queue, int* visited, int start, const int size)
 {
-    ++visited[start];
+    if (start == 0) // начинается обход с 0-ой вершины, помечаем её как посещённую
+        visited[start] = 1;
 
     // ищем смежные непосещённые вершины и ставим их в очередь
     for (int next = 0; next < size; ++next)
         if ((get2dInt(matrix, start, next) == 1) && !visited[next])
-            TwoLinkEnqueue(queue, next);
+        {
+            ++visited[next];              // посещаем
+            TwoLinkEnqueue(queue, next);  // добавляем в очередь, чтобы посетить все непосещённые смежные с ней
+        }
 
     // переходим к следующей вершине в очереди
     if (queue->size > 0)
@@ -364,7 +366,7 @@ void task2()
     free(visited);
     free(edges);
     free(queue);
-    // освобождаем выделенную под граф память:
+    // и, наконец, освобождаем выделенную память под граф:
     for (int i = 0; i < nodes; ++i)
         free(graph[i]);
     free(graph);
