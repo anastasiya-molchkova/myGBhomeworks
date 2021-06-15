@@ -253,9 +253,6 @@ int** initSimpleGraph(const int nodes)
 // рекурсивная функция обхода графа в ширину, количество подсчётов захода в каждую вершину считается в массиве edges
 void widthTraversRecursive(int** matrix, TwoLinkList* queue, int* visited, int* edges, int start, const int size)
 {
-    if (start == 0) 
-        visited[0] = 1;
-
     // ищем смежные вершины, считаем их и ставим в очередь для подсчёта их рёбер
     for (int next = 0; next < size; ++next)
         if ((get2dInt(matrix, start, next) == 1))
@@ -359,8 +356,10 @@ void task2()
     // очередь из вершин должна не зависить от экземпляра функции, поэтому создаём её здесь
     TwoLinkList* queue = (TwoLinkList*)malloc(sizeof(TwoLinkList));
     initTwoLinkList(queue);
+    int start = 0; 
+    visited[start] = 1;
 
-    widthTraversRecursive(graph, queue, visited, rec_edges, 0, nodes);
+    widthTraversRecursive(graph, queue, visited, rec_edges, start, nodes);
     makeTraversResult(rec_edges, nodes);
 
     printf("3. Обход простого графа по матрице смежности.\n\n");
