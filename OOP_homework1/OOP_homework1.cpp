@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <cmath>    // для возведения в степень
+#include <cstdint>  // для std::uint8_t
 
 // TASK 1
 class Power
@@ -65,8 +66,47 @@ void task1()
     std::cout << std::endl;
 }
 
+// TASK 2
+class RGBA
+{
+private:
+    std::uint8_t m_red = 0;
+    std::uint8_t m_green = 0;
+    std::uint8_t m_blue = 0;
+    std::uint8_t m_alpha = 255;
+public:
+    RGBA() {}
+    // параметризированный конструктор:
+    RGBA(const std::uint8_t red, const std::uint8_t green, const std::uint8_t blue, const std::uint8_t alpha = 255):
+        m_red(red), m_green(green), m_blue(blue), m_alpha(alpha)
+    {}
+
+    void print()
+    {
+        std::cout << "RGBA color code is (" << static_cast<int>(m_red) << ", " << static_cast<int>(m_green) 
+                          << ", " << static_cast<int>(m_blue) << ", " << static_cast<int>(m_alpha) << ")\n";
+    }
+};
+
+void task2()
+{
+    std::cout << "Task 2, RGBA class.\n";
+
+    RGBA color1;
+    color1.print();
+
+    RGBA color2 = RGBA(100, 200, 50, 10);
+    color2.print();
+
+    RGBA color3 = RGBA(80, 130, 150);
+    color3.print();
+
+    std::cout << std::endl;
+}
+
 int main()
 {
     task1();
+    task2();
     return 0;
 }
