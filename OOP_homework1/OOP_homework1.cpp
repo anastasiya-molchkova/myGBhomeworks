@@ -13,13 +13,16 @@
    private-массив целых чисел длиной 10;
    private целочисленное значение для отслеживания длины стека;
    public-метод с именем reset(), который будет сбрасывать длину и все значения элементов на 0;
-   public-метод с именем push(), который будет добавлять значение в стек. push() должен возвращать значение false, если массив уже заполнен, и true в противном случае;
-   public-метод с именем pop() для вытягивания и возврата значения из стека. Если в стеке нет значений, то должно выводиться предупреждение;
+   public-метод с именем push(), который будет добавлять значение в стек. push() должен возвращать значение false,
+   если массив уже заполнен, и true в противном случае;
+   public-метод с именем pop() для вытягивания и возврата значения из стека. Если в стеке нет значений, 
+   то должно выводиться предупреждение;
    public-метод с именем print(), который будет выводить все значения стека. */
 
 #include <iostream>
 #include <cmath>    // для возведения в степень
 #include <cstdint>  // для std::uint8_t
+#include <array>
 
 // TASK 1
 class Power
@@ -104,9 +107,87 @@ void task2()
     std::cout << std::endl;
 }
 
+// TASK 3
+class Stack
+{
+private:
+    static const size_t max_size = 10;
+    std::array<int, max_size> stack = {};
+    size_t current_size = 0;
+public:
+    void reset()
+    {
+        for (auto& element : stack)
+            element = 0;
+        current_size = 0;
+    }
+    bool push(const int new_value)
+    {
+        if (current_size >= max_size)
+        {
+            std::cout << "Stack overflow error!\n";
+            return false;
+        }
+        else
+        {
+            stack[current_size] = new_value;
+            ++current_size;
+            return true;
+        }
+    }
+    int pop()
+    {
+        if (current_size == 0)
+        {
+            std::cout << "Stack is empty!\n";
+            return 0;
+        }
+        else
+        {
+            int pop_value = stack[--current_size];
+            stack[current_size] = 0;
+            return pop_value;
+        }
+    }
+    void print()
+    {
+        std::cout << "(";
+        if (current_size == 0)
+            std::cout << "Stack is empty!";
+        else
+            for (size_t i = 0; i < current_size; ++i)
+                std::cout << stack[i] << " ";
+        std::cout << ")\n";
+    }
+};
+
+void task3()
+{
+    std::cout << "Task 3, Stack class.\n";
+
+    Stack stack;
+    stack.reset();
+    stack.print();
+
+    stack.push(3);
+    stack.push(7);
+    stack.push(5);
+    stack.print();
+
+    stack.pop();
+    stack.print();
+
+    stack.pop();
+    stack.pop();
+    stack.print();
+
+    std::cout << std::endl;
+}
+
 int main()
 {
     task1();
     task2();
+    task3();
     return 0;
 }
