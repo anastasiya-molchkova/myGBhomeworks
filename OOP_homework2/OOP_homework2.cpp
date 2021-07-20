@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-// TASK 1
+///////////////////////////////// TASK 1
 enum Sexes { FEMALE = 0, MALE = 1 };
 
 class Person
@@ -103,9 +103,60 @@ void task1()
     std::cout << std::endl;
 }
 
+///////////////////////////////// TASK 2
+class Fruit
+{
+protected:
+    std::string m_name = "";
+    std::string m_color = "";
+public:
+    Fruit () {}
+    Fruit(const std::string& name, const std::string& color): m_name(name), m_color(color)
+    {}
+    std::string getName () const
+    {
+        return m_name;
+    }
+    std::string getColor() const
+    {
+        return m_color;
+    }
+};
+
+class Apple : public Fruit
+{
+public:
+    Apple(): Fruit("apple", "red/yellow/green") {}
+    Apple(const std::string& name, const std::string& color) : Fruit(name, color)
+    {}
+    Apple(const std::string& color) : Fruit("apple", color)
+    {}
+};
+
+class Banana : public Fruit
+{
+public:
+    Banana(): Fruit("banana", "yellow") {}
+    Banana(const std::string& color) : Fruit("banana", color)
+    {}
+    Banana(const std::string& name, const std::string& color) : Fruit(name, color)
+    {}
+};
+
+class GrannySmith : public Apple
+{
+public:
+    GrannySmith() : Apple("Granny Smith apple", "green") {}
+    GrannySmith(const std::string& color) : Apple("Granny Smith apple", color)
+    {}
+    GrannySmith(const std::string& name, const std::string& color) : Apple(name, color)
+    {}
+};
+
 void task2()
 {
-    /*
+    std::cout << " TASK 2, with Fruit classes\n\n";
+
     Apple a("red");
     Banana b;
     GrannySmith c;
@@ -113,7 +164,8 @@ void task2()
     std::cout << "My " << a.getName() << " is " << a.getColor() << ".\n";
     std::cout << "My " << b.getName() << " is " << b.getColor() << ".\n";
     std::cout << "My " << c.getName() << " is " << c.getColor() << ".\n";
-    */
+    
+    std::cout << std::endl;
 }
 
 int main()
