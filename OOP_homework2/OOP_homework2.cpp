@@ -47,8 +47,8 @@ class Student : public Person
 {
 private:
     unsigned short m_year = 0;
-public:
     static size_t students_counter;
+public:
     // конструкторы:
     Student() 
     {
@@ -60,6 +60,10 @@ public:
         ++students_counter;
     }
     // методы:
+    static size_t get_students_number()
+    {
+        return students_counter;
+    }
     void set_year(const unsigned short year)
     {
         m_year = year;
@@ -68,10 +72,15 @@ public:
     {
         ++m_year;
     }
-    void print()
+    void print() const
     {
         std::cout << "Student " << m_name << ", " << m_age << " years old, " << ((m_sex == MALE)?"male":"female") << ", "
                   << m_weight << " kg., " << m_year << " year of study\n";
+    }
+    // деструктор
+    ~Student()
+    {
+        --students_counter;
     }
 };
 
@@ -90,11 +99,11 @@ void task1()
       Student("Artem", 19, MALE, 67, 3) };
 
     // запрашиваем, какого студента нужно вывести:
-    std::cout << Student::students_counter << " students have been created. Which one do you want to check?\n";
+    std::cout << Student::get_students_number() << " students have been created. Which one do you want to check?\n";
     size_t st_number = 0;
-    while (st_number < 1 || st_number > Student::students_counter)
+    while (st_number < 1 || st_number > Student::get_students_number())
     {
-        std::cout << "enter a number from 1 to " << Student::students_counter << ": ";
+        std::cout << "enter a number from 1 to " << Student::get_students_number() << ": ";
         std::cin >> st_number;
     } ;
     
