@@ -257,9 +257,205 @@ void task2()
     std::cout << std::endl;
 }
 
+//////////////////////////// TASK3
+class Fraction
+{
+private:
+    short m_numerator;
+    short m_denominator;
+
+    //метод для поиска наибольшего общего делителя двух чисел
+    static short NOD(short a, short b)
+    {
+        return (b == 0) ? (a > 0 ? a : -a) : NOD(b, a % b);
+    }
+    // функция сокращения дроби
+    void reduce()
+    {
+        short nod = NOD(m_numerator, m_denominator);
+        m_numerator /= nod;
+        m_denominator /= nod;
+    }
+public:
+    //конструктор
+    Fraction(short a = 0, short b = 1) : m_numerator(a), m_denominator(b)
+    {
+        if (m_denominator == 0)
+        {
+            std::cerr << "Denominator cannot be 0, we put it as 1. \n";
+            m_denominator = 1;
+        }
+        reduce(); //сокращаем дробь
+    }
+
+    //функция print() будет выводить дробь
+    void print()
+    {
+        std::cout << m_numerator << "/" << m_denominator;
+    }
+
+    // перегрузка унарного минуса
+    Fraction operator-()
+    {
+        return Fraction(-m_numerator, m_denominator);
+    }
+    // дружественные функции для перегрузки бинарных операторов
+    friend Fraction operator+(const Fraction& f1, const Fraction& f2);
+    friend Fraction operator*(const Fraction& f1, const Fraction& f2);
+    friend Fraction operator-(const Fraction& f1, const Fraction& f2);
+    friend Fraction operator/(const Fraction& f1, const Fraction& f2);
+    // дружественные функции для перегрузки операторов сравнения
+    friend bool operator==(const Fraction& f1, const Fraction& f2);
+    friend bool operator!=(const Fraction& f1, const Fraction& f2);
+    friend bool operator>(const Fraction& f1, const Fraction& f2);
+    friend bool operator>=(const Fraction& f1, const Fraction& f2);
+    friend bool operator<(const Fraction& f1, const Fraction& f2);
+    friend bool operator<=(const Fraction& f1, const Fraction& f2);
+};
+
+Fraction operator+(const Fraction& f1, const Fraction& f2)
+{
+    return Fraction(((f1.m_numerator * f2.m_denominator) + (f2.m_numerator * f1.m_denominator)), (f1.m_denominator * f2.m_denominator));
+};
+
+Fraction operator*(const Fraction& f1, const Fraction& f2)
+{
+    return Fraction((f1.m_numerator * f2.m_numerator), (f1.m_denominator * f2.m_denominator));
+};
+
+Fraction operator-(const Fraction& f1, const Fraction& f2)
+{
+    return Fraction(((f1.m_numerator * f2.m_denominator) - (f2.m_numerator * f1.m_denominator)), (f1.m_denominator * f2.m_denominator));
+};
+
+Fraction operator/(const Fraction& f1, const Fraction& f2)
+{
+    return Fraction((f1.m_numerator * f2.m_denominator), (f1.m_denominator * f2.m_numerator));
+};
+
+bool operator==(const Fraction& f1, const Fraction& f2)
+{
+    // сравниваем числители дробей с одинаковым знаменателем, общий знаменатель - произведение знаменателей двух дробей
+    return ((f1.m_numerator * f2.m_denominator) == (f2.m_numerator * f1.m_denominator));
+}
+
+bool operator!=(const Fraction& f1, const Fraction& f2)
+{
+    return !(f1 == f2);
+}
+
+bool operator>(const Fraction& f1, const Fraction& f2)
+{
+    // сравниваем числители дробей с одинаковым знаменателем, общий знаменатель - произведение знаменателей двух дробей
+    return ((f1.m_numerator * f2.m_denominator) > (f2.m_numerator * f1.m_denominator));
+}
+
+bool operator>=(const Fraction& f1, const Fraction& f2)
+{
+    // сравниваем числители дробей с одинаковым знаменателем, общий знаменатель - произведение знаменателей двух дробей
+    return ((f1.m_numerator * f2.m_denominator) >= (f2.m_numerator * f1.m_denominator));
+}
+
+bool operator<(const Fraction& f1, const Fraction& f2)
+{
+    return !(f1 >= f2);
+}
+
+bool operator<=(const Fraction& f1, const Fraction& f2)
+{
+    return !(f1 > f2);
+}
+
+void task3()
+{
+    std::cout << "TASK 3, with fractions\n";
+
+    Fraction f1(3, 7);
+    Fraction f3(4, 9);
+
+    f1.print();
+    std::cout << " + ";
+    f3.print();
+    std::cout << " = ";
+    Fraction result(f1 + f3);
+    result.print();
+    std::cout << std::endl;
+
+    f1.print();
+    std::cout << " * ";
+    f3.print();
+    std::cout << " = ";
+    result = f1 * f3;
+    result.print();
+    std::cout << std::endl;
+
+    f1.print();
+    std::cout << " / ";
+    f3.print();
+    std::cout << " = ";
+    result = f1 / f3;
+    result.print();
+    std::cout << std::endl;
+
+    f1.print();
+    std::cout << " - ";
+    f3.print();
+    std::cout << " = ";
+    result = f1 - f3;
+    result.print();
+    std::cout << std::endl;
+
+    f1.print();
+    std::cout << " > ";
+    f3.print();
+    std::cout << " is " << std::boolalpha << (f1 > f3) << std::endl;
+
+    f1.print();
+    std::cout << " <= ";
+    f3.print();
+    std::cout << " is " << std::boolalpha << (f1 <= f3) << std::endl;
+
+    f1.print();
+    std::cout << " < ";
+    f3.print();
+    std::cout << " is " << std::boolalpha << (f1 < f3) << std::endl;
+
+    f1.print();
+    std::cout << " >= ";
+    f3.print();
+    std::cout << " is " << std::boolalpha << (f1 >= f3) << std::endl;
+
+    Fraction f2(9, 21);  // дробь равная f1
+
+    f1.print();
+    std::cout << " == ";
+    f2.print();
+    std::cout << " is " << std::boolalpha << (f1 == f2) << std::endl;
+
+    f1.print();
+    std::cout << " != ";
+    f2.print();
+    std::cout << " is " << std::boolalpha << (f1 != f2) << std::endl;
+
+    f1.print();
+    std::cout << " == ";
+    f3.print();
+    std::cout << " is " << std::boolalpha << (f1 == f3) << std::endl;
+
+    std::cout << "-";
+    f1.print();
+    std::cout << " is ";
+    result = -f1;
+    result.print();
+    std::cout << std::endl;
+
+    std::cout << std::endl;
+}
+
 int main()
 {
     task1();
     task2();
+    task3();
     return 0;
 }
