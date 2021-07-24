@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <string>
 
 //////////////////////////// TASK1
 class Figure
@@ -152,8 +153,113 @@ void task1()
     std::cout << std::endl;
 }
 
+//////////////////////////// TASK2
+class Car
+{
+protected:
+    std::string m_company;
+    std::string m_model;
+    virtual void intro()
+    {
+        std::cout << "This is a Car\n";
+    }
+public:
+    Car() 
+    { 
+        intro(); 
+    }
+    Car(const std::string& company, const std::string& model): m_company(company), m_model(model) 
+    {
+        intro();
+    }
+    virtual ~Car()
+    {
+        std::cout << "~Car\n";
+    }
+};
+
+class PassengerCar: virtual public Car
+{
+protected:
+    void intro() override
+    {
+        std::cout << "This is a Passenger Car\n";
+    }
+public:
+    PassengerCar()
+    {
+        intro();
+    }
+    PassengerCar(const std::string& company, const std::string& model) : Car(company, model)
+    {
+        intro();
+    }
+    ~PassengerCar()
+    {
+        std::cout << "~PassengerCar\n";
+    }
+};
+
+class Bus : virtual public Car
+{
+protected:
+    size_t m_seats_number = 10;
+    void intro() override
+    {
+        std::cout << "This is a Bus\n";
+    }
+public:
+    Bus() 
+    {
+        intro();
+    }
+    Bus(const std::string& company, const std::string& model, const size_t seats = 10) : Car(company, model), m_seats_number(seats)
+    {
+        intro();
+    }
+    ~Bus()
+    {
+        std::cout << "~Bus\n";
+    }
+};
+
+class Miniven: public PassengerCar, public Bus
+{
+private:
+    void intro() override
+    {
+        std::cout << "This is a Miniven\n";
+    }
+public:
+    Miniven()
+    {
+        intro();
+    }
+    Miniven(const std::string& company, const std::string& model, const size_t seats = 10) : Bus(company, model, seats) 
+    { 
+        intro();
+    }
+    ~Miniven()
+    {
+        std::cout << "~Miniven\n";
+    }
+};
+
+void task2()
+{
+    std::cout << "TASK 2, with different types of cars\n";
+    // чтобы увидеть конструкторы и деструкторы для каждого класса, 
+    // каждый пример помещаем в свой собственный блок - зону видимости
+    {Car car; }
+    {PassengerCar pass_car; }
+    {Bus bus; }
+    {Miniven miniven; }
+    std::cout << std::endl;
+}
+
 int main()
 {
     task1();
+    task2();
     return 0;
 }
