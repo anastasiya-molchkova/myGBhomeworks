@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <string>    // для std::string
 #include <clocale>   // для вывода сообщений на кириллице 
+#include <vector>
 
 using std::cout; using std::endl; using std::cin;
 using std::string;
@@ -149,6 +150,50 @@ public:
 	{
 		face = !face;
 	}
+
+	bool is_Ace()
+	{
+		return (m_rank == Ace) ? true : false;
+	}
+};
+
+class Hand
+{
+protected:
+	std::vector <Card*> cards_on_hand;
+public:
+	// добавляет в коллекцию карт новую карту
+	void Add(Card* card)
+	{
+		cards_on_hand.push_back(card);
+	}
+	// очищает руку от карт
+	void Clear()
+	{
+		cards_on_hand.clear();
+	}
+	// возвращает сумму очков карт руки
+	unsigned short GetValue()
+	{
+		unsigned short summ{ 0 };
+		size_t aces_on_hand{ 0 };
+		for (const auto& card_ptr : cards_on_hand)
+		{
+			summ += card_ptr->getCardValue();
+			if (card_ptr->is_Ace())
+				++aces_on_hand;
+		}
+
+		const int goal{ 21 };
+		//считаем тузы как 1 вместо 11, если сумма больше 21:
+		while ((summ > goal) && (aces_on_hand > 0))
+		{
+			summ -= 10;
+			--aces_on_hand;
+		}
+
+		return summ;
+	}
 };
 
 int main()
@@ -161,6 +206,54 @@ int main()
 
 	Card c2(Card::Clubs, Card::Queen);
 	cout << c2.printCard() << endl;
+
+	Card c3(Card::Clubs, Card::Ace);
+	cout << c3.printCard() << endl;
+
+	Card c4(Card::Spades, Card::Ace);
+	cout << c4.printCard() << endl;
+
+	Card c5(Card::Hearts, Card::Ace);
+	cout << c5.printCard() << endl;
+
+	Hand someHand;
+	someHand.Add(&c1);
+	someHand.Add(&c2);
+	someHand.Add(&c3);
+	someHand.Add(&c4);
+	someHand.Add(&c5);
+	std::cout << "Summ value on hand: " << someHand.GetValue() << std::endl;
+	someHand.Clear();
+
+	// main из методички:
+	//cout << "\t\tWelcome to Blackjack!\n\n";
+
+	//int numPlayers = 0;
+	//while (numPlayers < 1 || numPlayers > 7)
+	//{
+	//	cout << "How many players? (1 - 7): ";
+	//	cin >> numPlayers;
+	//}
+
+	//vector<string> names;
+	//string name;
+	//for (int i = 0; i < numPlayers; ++i)
+	//{
+	//	cout << "Enter player name: ";
+	//	cin >> name;
+	//	names.push_back(name);
+	//}
+	//cout << endl;
+
+	//// игровой цикл
+	//Game aGame(names);
+	//char again = 'y';
+	//while (again != 'n' && again != 'N')
+	//{
+	//	aGame.Play();
+	//	cout << "\nDo you want to play again? (Y/N): ";
+	//	cin >> again;
+	//}
 
 	return 0;
 }
