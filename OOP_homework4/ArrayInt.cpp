@@ -1,5 +1,6 @@
 #include "ArrayInt.h"
 
+// Первые несколько методов - копия кода из методички, можно не проверять:
 ArrayInt::ArrayInt(int length) :
     m_length(length)
 {
@@ -106,6 +107,7 @@ void ArrayInt::push_back(int value)
 }
 
 // здесь начинается описание функций из домашней работы:
+// извлекает последнее значение "вектора"
 int ArrayInt::pop_back()
 {
     assert(m_length > 0);
@@ -115,6 +117,7 @@ int ArrayInt::pop_back()
     return last_element;
 }
 
+// извлекает первое значение "вектора"
 int ArrayInt::pop_front()
 {
     assert(m_length > 0);
@@ -130,6 +133,7 @@ int ArrayInt::pop_front()
     return first_element;
 }
 
+// вспомогательные функции для сортировки:
 // меняет местами значения двух чисел
 void swap(int* number1, int* number2)
 {
@@ -163,11 +167,13 @@ void qsort(int* array, int first, int last)
     if (first < j) qsort(array, first, j);
 }
 
+// сортировка значений "вектора"
 void ArrayInt::sort()
 {
     qsort(m_data, 0, m_length - 1);
 }
 
+// выводит "вектор" на экран
 void ArrayInt::print() const
 {
     if (m_length == 0)
