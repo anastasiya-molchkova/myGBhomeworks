@@ -1,7 +1,10 @@
 ﻿#include <iostream>
 #include <string>    // для std::string
 #include <clocale>   // для вывода сообщений на кириллице 
+<<<<<<< HEAD
 #include <vector>
+=======
+>>>>>>> OOP3
 
 using std::cout; using std::endl; using std::cin;
 using std::string;
@@ -22,7 +25,10 @@ public:
 	//перечисление достоинств карт
 	enum CardRanks
 	{
+<<<<<<< HEAD
 		Ace = 1,
+=======
+>>>>>>> OOP3
 		rank2,
 		rank3,
 		rank4,
@@ -35,6 +41,10 @@ public:
 		Jack,
 		Queen,
 		King,
+<<<<<<< HEAD
+=======
+		Ace,
+>>>>>>> OOP3
 		//Jocker,
 		ranksNumber //для обозначения количества достоинств
 	};
@@ -57,6 +67,7 @@ public:
 		switch (m_rank)
 		{
 		case rank2:
+<<<<<<< HEAD
 		case rank3:
 		case rank4:
 		case rank5:
@@ -66,6 +77,33 @@ public:
 		case rank9:
 		case rank10:
 			cardCode = m_rank;
+=======
+			cardCode = "2";
+			break;
+		case rank3:
+			cardCode = "3";
+			break;
+		case rank4:
+			cardCode = "4";
+			break;
+		case rank5:
+			cardCode = "5";
+			break;
+		case rank6:
+			cardCode = "6";
+			break;
+		case rank7:
+			cardCode = "7";
+			break;
+		case rank8:
+			cardCode = "8";
+			break;
+		case rank9:
+			cardCode = "9";
+			break;
+		case rank10:
+			cardCode = "10";
+>>>>>>> OOP3
 			break;
 		case Jack:
 			cardCode = "Валет";
@@ -109,7 +147,10 @@ public:
 	{
 		switch (m_rank)
 		{
+<<<<<<< HEAD
 		case Ace:
+=======
+>>>>>>> OOP3
 		case rank2:
 		case rank3:
 		case rank4:
@@ -119,11 +160,20 @@ public:
 		case rank8:
 		case rank9:
 		case rank10:
+<<<<<<< HEAD
 			return m_rank;
+=======
+			return (m_rank + 2); // двойка имеет 0 индекс в перечислении, 3 - первый и т.д.
+>>>>>>> OOP3
 		case Jack:
 		case Queen:
 		case King:
 			return 10;
+<<<<<<< HEAD
+=======
+		case Ace:
+			return 11;
+>>>>>>> OOP3
 		default:
 			return 0;
 		}
@@ -133,6 +183,7 @@ public:
 	{
 		face = !face;
 	}
+<<<<<<< HEAD
 
 	bool is_Ace()
 	{
@@ -184,6 +235,8 @@ public:
 
 		return summ;
 	}
+=======
+>>>>>>> OOP3
 };
 
 int main()
@@ -197,6 +250,7 @@ int main()
 	Card c2(Card::Clubs, Card::Queen);
 	cout << c2.printCard() << endl;
 
+<<<<<<< HEAD
 	Card c3(Card::Clubs, Card::Ace);
 	cout << c3.printCard() << endl;
 
@@ -245,5 +299,7 @@ int main()
 	//	cin >> again;
 	//}
 
+=======
+>>>>>>> OOP3
 	return 0;
 }
