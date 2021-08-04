@@ -25,7 +25,8 @@ void task1()
     std::cout << vector.pop_back() << std::endl;
     vector.print();
     vector.sort();
-    //std::cout << vector.pop_front() << std::endl;
+    vector.print();
+    std::cout << vector.pop_front() << std::endl;
     vector.print();
     std::cout << std::endl;
 }

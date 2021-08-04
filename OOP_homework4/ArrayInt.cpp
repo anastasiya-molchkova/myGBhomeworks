@@ -126,8 +126,8 @@ int ArrayInt::pop_front()
         erase();
     else
     {
-        m_data[0] = 0;
-        m_data = m_data + 1;
+        for (int index = 0; index < (m_length - 1); ++index)
+            m_data[index] = m_data[index + 1];
         --m_length;
     }
     return first_element;
