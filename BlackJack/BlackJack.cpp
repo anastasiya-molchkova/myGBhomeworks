@@ -22,6 +22,7 @@ public:
 	//перечисление достоинств карт
 	enum CardRanks
 	{
+		Ace = 1,
 		rank2,
 		rank3,
 		rank4,
@@ -34,7 +35,6 @@ public:
 		Jack,
 		Queen,
 		King,
-		Ace,
 		//Jocker,
 		ranksNumber //для обозначения количества достоинств
 	};
@@ -57,31 +57,15 @@ public:
 		switch (m_rank)
 		{
 		case rank2:
-			cardCode = "2";
-			break;
 		case rank3:
-			cardCode = "3";
-			break;
 		case rank4:
-			cardCode = "4";
-			break;
 		case rank5:
-			cardCode = "5";
-			break;
 		case rank6:
-			cardCode = "6";
-			break;
 		case rank7:
-			cardCode = "7";
-			break;
 		case rank8:
-			cardCode = "8";
-			break;
 		case rank9:
-			cardCode = "9";
-			break;
 		case rank10:
-			cardCode = "10";
+			cardCode = m_rank;
 			break;
 		case Jack:
 			cardCode = "Валет";
@@ -125,6 +109,7 @@ public:
 	{
 		switch (m_rank)
 		{
+		case Ace:
 		case rank2:
 		case rank3:
 		case rank4:
@@ -134,13 +119,11 @@ public:
 		case rank8:
 		case rank9:
 		case rank10:
-			return (m_rank + 2); // двойка имеет 0 индекс в перечислении, 3 - первый и т.д.
+			return m_rank;
 		case Jack:
 		case Queen:
 		case King:
 			return 10;
-		case Ace:
-			return 11;
 		default:
 			return 0;
 		}
@@ -170,6 +153,13 @@ public:
 	// очищает руку от карт
 	void Clear()
 	{
+		/*
+		for (auto card_ptr : cards_on_hand)
+		{
+			delete card_ptr;
+			card_ptr = nullptr;
+		}
+		*/
 		cards_on_hand.clear();
 	}
 	// возвращает сумму очков карт руки
@@ -185,10 +175,10 @@ public:
 		}
 
 		const int goal{ 21 };
-		//считаем тузы как 1 вместо 11, если сумма больше 21:
-		while ((summ > goal) && (aces_on_hand > 0))
+		//считаем тузы как 11 вместо 1, если сумма меньше 11:
+		while ((summ <= (goal-10)) && (aces_on_hand > 0))
 		{
-			summ -= 10;
+			summ += 10;
 			--aces_on_hand;
 		}
 
