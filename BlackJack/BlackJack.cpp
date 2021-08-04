@@ -1,10 +1,7 @@
 ﻿#include <iostream>
 #include <string>    // для std::string
 #include <clocale>   // для вывода сообщений на кириллице 
-<<<<<<< HEAD
 #include <vector>
-=======
->>>>>>> OOP3
 
 using std::cout; using std::endl; using std::cin;
 using std::string;
@@ -25,10 +22,8 @@ public:
 	//перечисление достоинств карт
 	enum CardRanks
 	{
-<<<<<<< HEAD
+
 		Ace = 1,
-=======
->>>>>>> OOP3
 		rank2,
 		rank3,
 		rank4,
@@ -41,10 +36,6 @@ public:
 		Jack,
 		Queen,
 		King,
-<<<<<<< HEAD
-=======
-		Ace,
->>>>>>> OOP3
 		//Jocker,
 		ranksNumber //для обозначения количества достоинств
 	};
@@ -67,17 +58,6 @@ public:
 		switch (m_rank)
 		{
 		case rank2:
-<<<<<<< HEAD
-		case rank3:
-		case rank4:
-		case rank5:
-		case rank6:
-		case rank7:
-		case rank8:
-		case rank9:
-		case rank10:
-			cardCode = m_rank;
-=======
 			cardCode = "2";
 			break;
 		case rank3:
@@ -103,7 +83,6 @@ public:
 			break;
 		case rank10:
 			cardCode = "10";
->>>>>>> OOP3
 			break;
 		case Jack:
 			cardCode = "Валет";
@@ -147,10 +126,7 @@ public:
 	{
 		switch (m_rank)
 		{
-<<<<<<< HEAD
 		case Ace:
-=======
->>>>>>> OOP3
 		case rank2:
 		case rank3:
 		case rank4:
@@ -160,20 +136,11 @@ public:
 		case rank8:
 		case rank9:
 		case rank10:
-<<<<<<< HEAD
 			return m_rank;
-=======
-			return (m_rank + 2); // двойка имеет 0 индекс в перечислении, 3 - первый и т.д.
->>>>>>> OOP3
 		case Jack:
 		case Queen:
 		case King:
 			return 10;
-<<<<<<< HEAD
-=======
-		case Ace:
-			return 11;
->>>>>>> OOP3
 		default:
 			return 0;
 		}
@@ -183,7 +150,6 @@ public:
 	{
 		face = !face;
 	}
-<<<<<<< HEAD
 
 	bool is_Ace()
 	{
@@ -235,8 +201,28 @@ public:
 
 		return summ;
 	}
-=======
->>>>>>> OOP3
+};
+
+class GenericPlayer : public Hand
+{
+protected:
+	string name;
+public:
+	GenericPlayer(const string& name_of_player): name{name_of_player} {}
+	// возвращает информацию, нужна ли игроку еще одна карта
+	virtual bool isHitting() = 0;
+	// возвращает bool значение, есть ли у игрока перебор
+	bool isBoosted()
+	{
+		const int goal{ 21 };
+		return (GetValue() > goal) ? true : false;
+	}
+	// выводит на экран имя игрока и объявляет, что у него перебор
+	void Bust()
+	{
+		if (isBoosted())
+			cout << "У игрока " << name << " перебор!\n";
+	}
 };
 
 int main()
@@ -250,7 +236,6 @@ int main()
 	Card c2(Card::Clubs, Card::Queen);
 	cout << c2.printCard() << endl;
 
-<<<<<<< HEAD
 	Card c3(Card::Clubs, Card::Ace);
 	cout << c3.printCard() << endl;
 
@@ -299,7 +284,5 @@ int main()
 	//	cin >> again;
 	//}
 
-=======
->>>>>>> OOP3
 	return 0;
 }
