@@ -151,7 +151,7 @@ public:
 		face = !face;
 	}
 
-	bool is_Ace()
+	bool is_Ace() const
 	{
 		return (m_rank == Ace) ? true : false;
 	}
@@ -180,7 +180,7 @@ public:
 		cards_on_hand.clear();
 	}
 	// возвращает сумму очков карт руки
-	unsigned short GetValue()
+	unsigned short GetValue() const
 	{
 		unsigned short summ{ 0 };
 		size_t aces_on_hand{ 0 };
@@ -210,15 +210,15 @@ protected:
 public:
 	GenericPlayer(const string& name_of_player): name{name_of_player} {}
 	// возвращает информацию, нужна ли игроку еще одна карта
-	virtual bool isHitting() = 0;
+	virtual bool isHitting() const = 0;
 	// возвращает bool значение, есть ли у игрока перебор
-	bool isBoosted()
+	bool isBoosted() const
 	{
 		const int goal{ 21 };
 		return (GetValue() > goal) ? true : false;
 	}
 	// выводит на экран имя игрока и объявляет, что у него перебор
-	void Bust()
+	void Bust() const
 	{
 		if (isBoosted())
 			cout << "У игрока " << name << " перебор!\n";

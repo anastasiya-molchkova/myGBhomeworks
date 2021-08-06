@@ -79,7 +79,7 @@ template <typename T2>
 class StringValuePair: public Pair<string, T2>
 {
 public:
-    StringValuePair(const string text, const T2 value) : Pair<string, T2>(text, value)
+    StringValuePair(const string& text, const T2 value) : Pair<string, T2>(text, value)
     {}
 };
 
