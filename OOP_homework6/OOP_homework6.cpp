@@ -20,11 +20,11 @@ int getNumber()
     while (std::cin.fail() || (std::cin.peek() != '\n'))
     {
         std::cin.clear();
-        std::cin.ignore(1000, '\n');
+        std::cin.ignore(32767, '\n');
         std::cout << "Try again, please: ";
         std::cin >> answer;
     }
-    std::cin.ignore(1000, '\n');
+    std::cin.ignore(32767, '\n');
     return answer;
 }
 
@@ -35,8 +35,24 @@ void task1()
     std::cout << "Your correct input is: " << result << std::endl << std::endl;
 }
 
+///////////////////// TASK 2
+
+std::ostream& endll(std::ostream& out)
+{
+    out << "\n\n";
+    out.flush();
+    return out;
+}
+
+void task2()
+{
+    std::cout << "Task 2, with a special manipulator endll.\n";
+    std::cout << "Test: " << endll << "Test finished." << endll;
+}
+
 int main()
 {
     task1();
+    task2();
     return 0;
 }
