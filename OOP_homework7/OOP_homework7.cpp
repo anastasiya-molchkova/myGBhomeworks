@@ -15,6 +15,8 @@
 #include <memory>     // для std::unique_ptr
 #include <utility>    // для std::move
 
+///////////////////////// TASK 1:
+
 class Date
 {
 private:
@@ -23,7 +25,20 @@ private:
     uint16_t m_year = 1990;
 public:
     Date() = default;
-    Date(const uint16_t day, const uint16_t month, const uint16_t year): m_day(day), m_month(month), m_year(year) {}
+    Date(const uint16_t day, const uint16_t month, const uint16_t year): m_day(day), m_month(month), m_year(year) 
+    {
+        // я решила не делать полную проверку дат, чтобы не связываться с февралём и високосными годами
+        // заменим лишь заведомо неверные числа и месяца
+        if ((m_day > 31) || (m_month > 12))
+        {
+            std::cerr << "\nWarning: wrong date: " << m_day << "." << m_month << "." << m_year << " will be replaced to: ";
+            if (m_day > 31)
+                m_day = 28;
+            if (m_month > 12)
+                m_month = 12;
+            std::cout << m_day << "." << m_month << "." << m_year << '\n';
+        } 
+    }
     uint16_t get_day() const
     {
         return m_day;
@@ -69,8 +84,60 @@ void task1()
     std::cout << ", date: " << *date << std::endl << std::endl;
 }
 
+///////////////////////// TASK 2:
+
+// перегрузим оператор сравнения двух дат
+bool operator<(const Date& date1, const Date& date2)
+{
+    if (date1.get_year() < date2.get_year())
+        return true;
+    else if (date1.get_year() > date2.get_year())
+        return false;
+    else  // года у дат совпадают
+    {
+        if (date1.get_month() < date2.get_month())
+            return true;
+        else if (date1.get_month() > date2.get_month())
+            return false;
+        else  // у дат совпадают годы и месяцы
+            return (date1.get_day() < date2.get_day()) ? true : false;
+    }
+}
+
+// я не знаю, как сделать так, чтобы функция принимала указатели std::unique_ptr <Date>, но чтобы они не обнулились
+Date latest_date(const Date* date_ptr1, const Date* date_ptr2)
+{
+    return (*date_ptr1 < *date_ptr2) ? (*date_ptr2) : (*date_ptr1);
+}
+
+// чтобы возвращать указатели через параметры, я передаю их по ссылке...
+void exchange(std::unique_ptr <Date>& date1, std::unique_ptr <Date>& date2)
+{
+    auto temp = std::move(date1);
+    date1 = std::move(date2);
+    date2 = std::move(temp);
+}
+
+void task2()
+{
+    std::cout << "Task 2, with handover of smart pointers to functions.\n";
+
+    std::unique_ptr <Date> date1 = std::make_unique<Date>(9, 8, 2021);
+    std::unique_ptr <Date> date2 = std::make_unique<Date>(33, 18, 2021);
+    std::cout << "Date 1: " << *date1 << " Date 2: " << *date2 << std::endl;
+
+    std::cout << "The latest date is: " << latest_date(date1.get(), date2.get()) << std::endl;
+    std::cout << "After comparison:\n";
+    std::cout << "Date 1: " << *date1 << " Date 2: " << *date2 << std::endl;
+
+    exchange(date1, date2);
+    std::cout << "After exchange:\n";
+    std::cout << "Date 1: " << *date1 << " Date 2: " << *date2 << std::endl << std::endl;
+}
+
 int main()
 {
     task1();
+    task2();
     return 0;
 }
