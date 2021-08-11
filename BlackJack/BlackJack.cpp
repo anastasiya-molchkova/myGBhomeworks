@@ -2,6 +2,8 @@
 #include <string>    // для std::string
 #include <clocale>   // для вывода сообщений на кириллице 
 #include <vector>
+#include <algorithm>
+#include <ctime>     // чтобы в randomize опираться на время запуска программы
 
 using std::cout; using std::endl; using std::cin;
 using std::string;
@@ -125,14 +127,15 @@ public:
 	unsigned short getCardValue() const
 	{
 		int value = 0;
-		if (face)
-		{
+		//if (face)
+		//{
 			// значение - это число, указанное на карте
 			value = m_rank;
 			// значение равно 10 для JACK, QUEEN и KING
 			if (value > 10)
 				value = 10;
-		}
+         //}
+
 		return value;
 	}
 	// переворачивает карту, т.е. если она была рубашкой вверх, то поворачивает лицом вверх, и наоборот
@@ -203,8 +206,8 @@ public:
 
 		//если первая карта имеет значение 0, то она лежит рубашкой вверх:
         // вернуть значение 0
-		if (cards_on_hand[0]->getCardValue() == 0)
-			return 0;
+		//if (cards_on_hand[0]->getCardValue() == 0)
+		//	return 0;
 
 		unsigned short summ{ 0 };
 		size_t aces_on_hand{ 0 };
@@ -273,12 +276,12 @@ std::ostream& operator<<(std::ostream& os, const GenericPlayer& aGenericPlayer)
 class Player : public GenericPlayer
 {
 public:
-	Player(const string& name = "");
+	Player(const string& name = ""): GenericPlayer(name) {}
 
-	virtual ~Player();
+	virtual ~Player() {}
 
 	// показывает, хочет ли игрок продолжать брать карты
-	virtual bool IsHitting() const;
+	bool isHitting() const override;
 
 	// объявляет, что игрок победил
 	void Win() const;
@@ -290,7 +293,7 @@ public:
 	void Push() const;
 };
 
-bool Player::IsHitting() const
+bool Player::isHitting() const
 {
 	cout << m_name << ", хотите взять ещё одну карту? (Y/N): ";
 	char response;
@@ -318,18 +321,18 @@ class House : public GenericPlayer
 private:
 	int limit = 16;
 public:
-	House(const string& name = "House");
+	House(const string& name = "House"): GenericPlayer(name) {}
 
-	virtual ~House();
+	virtual ~House() {}
 
 	// показывает, хочет ли дилер продолжать брать карты
-	virtual bool IsHitting() const;
+	bool isHitting() const override;
 
 	// переворачивает первую карту
 	void FlipFirstCard();
 };
 
-bool House::IsHitting() const
+bool House::isHitting() const
 {
 	return (GetValue() <= limit);
 }
@@ -342,64 +345,234 @@ void House::FlipFirstCard()
 		cout << "Нет карт, которые можно перевернуть!\n";
 }
 
+class Deck : public Hand
+{
+public:
+	Deck();
+
+	virtual ~Deck();
+
+	// создает стандартную колоду из 52 карт
+	void Populate();
+
+	// тасует карты
+	void Shuffle();
+
+	// раздает одну карту в руку
+	void Deal(Hand& aHand);
+
+	// дает дополнительные карты игроку
+	void AdditionalCards(GenericPlayer& aGenericPlayer);
+};
+
+Deck::Deck()
+{
+	cards_on_hand.reserve(52);
+	Populate();
+}
+
+Deck::~Deck()
+{}
+
+void Deck::Populate()
+{
+	Clear();
+	// создает стандартную колоду
+	for (int s = Card::Diamonds; s < Card::suitsNumber; ++s)
+	{
+		for (int r = Card::Ace; r < Card::ranksNumber; ++r)
+		{
+			Add(new Card(static_cast<Card::Suits>(s), static_cast<Card::CardRanks>(r)));
+		}
+	}
+}
+
+void Deck::Shuffle()
+{
+	std::random_shuffle(cards_on_hand.begin(), cards_on_hand.end());
+}
+
+void Deck::Deal(Hand& aHand)
+{
+	if (!cards_on_hand.empty())
+	{
+		aHand.Add(cards_on_hand.back());
+		cards_on_hand.pop_back();
+	}
+	else
+	{
+		cout << "Колода пуста, раздача невозможна\n";
+	}
+}
+
+void Deck::AdditionalCards(GenericPlayer& aGenericPlayer)
+{
+	cout << endl;
+	// продолжает раздавать карты до тех пор, пока у игрока не случается
+	// перебор или пока он хочет взять еще одну карту
+	while (!(aGenericPlayer.isBoosted()) && aGenericPlayer.isHitting())
+	{
+		Deal(aGenericPlayer);
+		cout << aGenericPlayer << endl;
+
+		if (aGenericPlayer.isBoosted())
+		{
+			aGenericPlayer.Bust();
+		}
+	}
+}
+
+class Game
+{
+public:
+	Game(const std::vector<string>& names);
+
+	~Game();
+
+	// проводит игру в Blackjack
+	void Play();
+
+private:
+	Deck m_Deck;
+	House m_House;
+	std::vector<Player> m_Players;
+};
+
+
+// Конструктор этого класса принимает ссылку на вектор строк, представляющих
+// имена игроков-людей. Конструктор создает объект класса Player для каждого имени
+Game::Game(const std::vector<string>& names)
+{
+	// создает вектор игроков из вектора с именами
+	std::vector<string>::const_iterator pName;
+	for (pName = names.begin(); pName != names.end(); ++pName)
+	{
+		m_Players.push_back(Player(*pName));
+	}
+
+	// запускает генератор случайных чисел
+	srand(static_cast<unsigned int>(time(0)));
+	m_Deck.Populate();
+	m_Deck.Shuffle();
+}
+
+Game::~Game()
+{}
+
+void Game::Play()
+{
+	// раздает каждому по две стартовые карты
+	std::vector<Player>::iterator pPlayer;
+	for (int i = 0; i < 2; ++i)
+	{
+		for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
+		{
+			m_Deck.Deal(*pPlayer);
+		}
+		m_Deck.Deal(m_House);
+	}
+
+	// прячет первую карту дилера
+	m_House.FlipFirstCard();
+
+	// открывает руки всех игроков
+	for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
+	{
+		cout << *pPlayer << endl;
+	}
+	cout << m_House << endl;
+
+	// раздает игрокам дополнительные карты
+	for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
+	{
+		m_Deck.AdditionalCards(*pPlayer);
+	}
+
+	// показывает первую карту дилера
+	m_House.FlipFirstCard();
+	cout << endl << m_House;
+
+	// раздает дилеру дополнительные карты
+	m_Deck.AdditionalCards(m_House);
+
+	if (m_House.isBoosted())
+	{
+		// все, кто остался в игре, побеждают
+		for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
+		{
+			if (!(pPlayer->isBoosted()))
+			{
+				pPlayer->Win();
+			}
+		}
+	}
+	else
+	{
+		// сравнивает суммы очков всех оставшихся игроков с суммой очков дилера
+		for (pPlayer = m_Players.begin(); pPlayer != m_Players.end();
+			++pPlayer)
+		{
+			if (!(pPlayer->isBoosted()))
+			{
+				if (pPlayer->GetValue() > m_House.GetValue())
+				{
+					pPlayer->Win();
+				}
+				else if (pPlayer->GetValue() < m_House.GetValue())
+				{
+					pPlayer->Lose();
+				}
+				else
+				{
+					pPlayer->Push();
+				}
+			}
+		}
+
+	}
+
+	// очищает руки всех игроков
+	for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
+	{
+		pPlayer->Clear();
+	}
+	m_House.Clear();
+}
+
 int main()
 {
 	// для вывода сообщений пользователю на кириллице
 	setlocale(LC_CTYPE, "rus");
 
-	Card c1(Card::Spades, Card::rank8, true);
-	cout << c1.printCard() << endl;
-
-	Card c2(Card::Clubs, Card::Queen);
-	cout << c2.printCard() << endl;
-
-	Card c3(Card::Clubs, Card::Ace);
-	cout << c3.printCard() << endl;
-
-	Card c4(Card::Spades, Card::Ace, true);
-	cout << c4.printCard() << endl;
-
-	Card c5(Card::Hearts, Card::Ace, true);
-	cout << c5.printCard() << endl;
-
-	Hand someHand;
-	someHand.Add(&c1);
-	someHand.Add(&c2);
-	someHand.Add(&c3);
-	someHand.Add(&c4);
-	someHand.Add(&c5);
-	std::cout << "Summ value on hand: " << someHand.GetValue() << std::endl;
-	someHand.Clear();
-
 	// main из методички:
-	//cout << "\t\tWelcome to Blackjack!\n\n";
+	cout << "\t\tДОБРО ПОЖАЛОВАТЬ В ИГРУ BLACK JACK!\n\n";
 
-	//int numPlayers = 0;
-	//while (numPlayers < 1 || numPlayers > 7)
-	//{
-	//	cout << "How many players? (1 - 7): ";
-	//	cin >> numPlayers;
-	//}
+	int numPlayers = 0;
+	while (numPlayers < 1 || numPlayers > 7)
+	{
+		cout << "Введите количество игроков (1 - 7): ";
+		cin >> numPlayers;
+	}
 
-	//vector<string> names;
-	//string name;
-	//for (int i = 0; i < numPlayers; ++i)
-	//{
-	//	cout << "Enter player name: ";
-	//	cin >> name;
-	//	names.push_back(name);
-	//}
-	//cout << endl;
+	std::vector<string> names;
+	string name;
+	for (int i = 0; i < numPlayers; ++i)
+	{
+		cout << "Имя " << i+1 << "-ого игрока: ";
+	    cin >> name;
+		names.push_back(name);
+	}
+	cout << endl;
 
-	//// игровой цикл
-	//Game aGame(names);
-	//char again = 'y';
-	//while (again != 'n' && again != 'N')
-	//{
-	//	aGame.Play();
-	//	cout << "\nDo you want to play again? (Y/N): ";
-	//	cin >> again;
-	//}
+	// игровой цикл
+	Game game(names);
+	char again = 'Y';
+	while (again != 'n' && again != 'N')
+	{
+		game.Play();
+		cout << "\nХотите сыграть ещё раз? (Y/N): ";
+		cin >> again;
+	}
 
 	return 0;
 }
