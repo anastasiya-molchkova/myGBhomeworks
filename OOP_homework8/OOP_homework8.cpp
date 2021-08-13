@@ -95,9 +95,9 @@ public:
 };
 
 // получаем от пользователя целое число
-int getNumber(const int stop_number)
+int getNumber(const std::string& text_to_user, const int stop_number)
 {
-    std::cout << "Enter an integer number (" << stop_number << " to stop): ";
+    std::cout << text_to_user << " (" << stop_number << " to stop): ";
     int answer;
     std::cin >> answer;
 
@@ -121,7 +121,7 @@ void task2()
     {
         try 
         {
-            n = getNumber(0);
+            n = getNumber("Enter an integer number", 0);
             if (n == 0)
                 break;
             bar.set(static_cast<double>(n));
@@ -138,9 +138,152 @@ void task2()
     std::cout << std::endl;
 }
 
+/////////////////////// TASK 3
+
+const int FIELD_SIZE = 10;
+
+enum DIRECTIONS { UP = 1, DOWN, LEFT, RIGHT, MAXdirections };
+
+std::string text_direction(const DIRECTIONS to)
+{
+    switch (to)
+    {
+    case DOWN:
+        return "DOWN";
+    case LEFT:
+        return "LEFT";
+    case RIGHT:
+        return "RIGHT";
+    default:
+        return "UP";
+    }
+}
+
+struct Coordinates
+{
+    int x;
+    int y;
+};
+
+class OffTheField
+{
+private:
+    DIRECTIONS command;
+    Coordinates current_position;
+public:
+    OffTheField() = delete;
+    OffTheField(const DIRECTIONS direction, Coordinates& current_x_y) :
+        command(direction), current_position{ current_x_y } {}
+    void print_message() const
+    {
+        std::cerr << "Command " << text_direction(command) << " is imposible for current position (" 
+            << current_position.x << ", " << current_position.y << ")!\n";
+    }
+};
+
+class IllegalCommand
+{
+private:
+    int command;
+    Coordinates current_position;
+public:
+    IllegalCommand() = delete;
+    IllegalCommand(const int wrong_direction, Coordinates& current_x_y) :
+        command(wrong_direction), current_position{current_x_y} {}
+    void print_message() const
+    {
+        std::cerr << "Command " << command << " is illegal, there is no such direction!\n"
+                  << "Current position is: (" << current_position.x << ", " << current_position.y << ")\n";
+    }
+};
+
+class Robot
+{
+private:
+    Coordinates position { FIELD_SIZE / 2, FIELD_SIZE / 2 };
+public:
+    Robot() = default;
+    void move_to_the_next_position(const int potential_direction)
+    {
+        if ((potential_direction < DIRECTIONS::UP) || (potential_direction >= DIRECTIONS::MAXdirections))
+            throw IllegalCommand(potential_direction, position);
+        else
+        {
+            Coordinates future_coordinates{ position };
+            DIRECTIONS move = static_cast<DIRECTIONS>(potential_direction);
+            switch (move)
+            {
+            case UP:
+                --future_coordinates.y;
+                break;
+            case DOWN:
+                ++future_coordinates.y;
+                break;
+            case LEFT:
+                --future_coordinates.x;
+                break;
+            case RIGHT:
+                ++future_coordinates.x;
+                break;
+            default:
+                throw IllegalCommand(potential_direction, position);
+                break;
+            }
+            if (future_coordinates.x < 1 || future_coordinates.x > FIELD_SIZE ||
+                future_coordinates.y < 1 || future_coordinates.y > FIELD_SIZE)
+                throw OffTheField(move, position);
+            else
+            {
+                position.x = future_coordinates.x;
+                position.y = future_coordinates.y;
+            }
+        }
+    }
+    void print_coordinates()
+    {
+        std::cout << "current robot position: (" << position.x << ", " << position.y << ")\n";
+    }
+};
+
+void task3()
+{
+    std::cout << "Task 3, with a robot management on the field " << FIELD_SIZE << "x" << FIELD_SIZE << ".\n";
+    Robot robocop{ Robot() };
+    robocop.print_coordinates();
+    std::cout << "Move the robot to:\n\tUP - " << UP << "     DOWN - " << DOWN
+              << "\n\tLEFT - " << LEFT << "   RIGHT - " << RIGHT << "\n";
+    int users_choice;
+    while (true)
+    {
+        users_choice = getNumber("Enter the direction", 0);
+        if (users_choice == 0)
+            break;
+        try
+        {
+            robocop.move_to_the_next_position(users_choice);
+            robocop.print_coordinates();
+        }
+        catch (const IllegalCommand& err)
+        {
+            err.print_message();
+        }
+        catch (const OffTheField& err)
+        {
+            err.print_message();
+        }
+        catch (...)
+        {
+            std::cerr << "... something bad happened, we don't know what exactly.\n";
+        }
+    }
+    std::cout << std::endl;
+}
+
 int main()
 {
     task1();
     task2();
+    task3();
+
     return 0;
 }
