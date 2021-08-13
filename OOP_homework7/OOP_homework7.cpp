@@ -105,7 +105,7 @@ bool operator<(const Date& date1, const Date& date2)
 }
 
 // я не знаю, как сделать так, чтобы функция принимала указатели std::unique_ptr <Date>, но чтобы они не обнулились
-Date latest_date(const Date* date_ptr1, const Date* date_ptr2)
+Date latest_date(const std::unique_ptr <Date>& date_ptr1, const std::unique_ptr <Date>& date_ptr2)
 {
     return (*date_ptr1 < *date_ptr2) ? (*date_ptr2) : (*date_ptr1);
 }
@@ -126,7 +126,7 @@ void task2()
     std::unique_ptr <Date> date2 = std::make_unique<Date>(33, 18, 2021);
     std::cout << "Date 1: " << *date1 << " Date 2: " << *date2 << std::endl;
 
-    std::cout << "The latest date is: " << latest_date(date1.get(), date2.get()) << std::endl;
+    std::cout << "The latest date is: " << latest_date(date1, date2) << std::endl;
     std::cout << "After comparison:\n";
     std::cout << "Date 1: " << *date1 << " Date 2: " << *date2 << std::endl;
 
