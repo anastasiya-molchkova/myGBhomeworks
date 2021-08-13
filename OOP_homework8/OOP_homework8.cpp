@@ -42,6 +42,7 @@ T div(const T a, const T b)
 
 void task1()
 {
+    std::cout << "Task 1, with exception of division by zero.\n";
     try
     {
         int n1 = 100;
@@ -60,10 +61,86 @@ void task1()
     {
         std::cerr << "... something bad happened, we don't know what exactly.\n";
     }
+    std::cout << std::endl;
+}
+
+/////////////////////// TASK 2
+
+class Ex
+{
+private:
+    double x;
+public:
+    Ex() = delete;
+    Ex(const double n): x(n) {}
+    double get_parameter() const
+    {
+        return x;
+    }
+};
+
+class Bar
+{
+private:
+    double y;
+public:
+    Bar() : y(0.0) {}
+    void set (const double a)
+    {
+        if (y + a > 100)
+            throw Ex(a * y);
+        else 
+            y = a;
+    }
+};
+
+// получаем от пользователя целое число
+int getNumber(const int stop_number)
+{
+    std::cout << "Enter an integer number (" << stop_number << " to stop): ";
+    int answer;
+    std::cin >> answer;
+
+    while (std::cin.fail() || (std::cin.peek() != '\n'))
+    {
+        std::cin.clear();
+        std::cin.ignore(32767, '\n');
+        std::cout << "Try again, please: ";
+        std::cin >> answer;
+    }
+    std::cin.ignore(32767, '\n');
+    return answer;
+}
+
+void task2()
+{
+    std::cout << "Task 2, with an exception in a class constructor.\n";
+    Bar bar{ Bar() };
+    int n{ -1 };         // параметр для bar.set()
+    while (true)
+    {
+        try 
+        {
+            n = getNumber(0);
+            if (n == 0)
+                break;
+            bar.set(static_cast<double>(n));
+        }
+        catch ( const Ex& exception)
+        {
+            std::cerr << " STOP: exceptional parameter is " << exception.get_parameter() << ", " << n << " + previous parameter for Bar > 100!\n";
+        }
+        catch (...)
+        {
+            std::cerr << "... something bad happened, we don't know what exactly.\n";
+        }
+    }
+    std::cout << std::endl;
 }
 
 int main()
 {
     task1();
+    task2();
     return 0;
 }
