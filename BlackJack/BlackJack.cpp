@@ -124,26 +124,16 @@ public:
 	//getCardValue возвращает значение карты (валет, королева или король — это 10, туз — это 11)
 	unsigned short getCardValue() const
 	{
-		switch (m_rank)
+		int value = 0;
+		if (face)
 		{
-		case Ace:
-		case rank2:
-		case rank3:
-		case rank4:
-		case rank5:
-		case rank6:
-		case rank7:
-		case rank8:
-		case rank9:
-		case rank10:
-			return m_rank;
-		case Jack:
-		case Queen:
-		case King:
-			return 10;
-		default:
-			return 0;
+			// значение - это число, указанное на карте
+			value = m_rank;
+			// значение равно 10 для JACK, QUEEN и KING
+			if (value > 10)
+				value = 10;
 		}
+		return value;
 	}
 	// переворачивает карту, т.е. если она была рубашкой вверх, то поворачивает лицом вверх, и наоборот
 	void flip()
@@ -155,13 +145,38 @@ public:
 	{
 		return (m_rank == Ace) ? true : false;
 	}
+
+	friend std::ostream& operator<<(std::ostream& os, const Card& aCard);
 };
+
+// перегружает оператор <<, чтобы получить возможность отправить объект типа Card в поток cout
+std::ostream& operator<<(std::ostream& os, const Card& aCard)
+{
+	const string RANKS[] = { "0", "A", "2", "3", "4", "5", "6", "7", "8", "9","10", "J", "Q", "K" };
+	const string SUITS[] = { "c", "d", "h", "s" };
+
+	if (aCard.face)
+		os << RANKS[aCard.m_rank] << SUITS[aCard.m_suit];
+	else
+		os << "XX";
+
+	return os;
+}
 
 class Hand
 {
 protected:
 	std::vector <Card*> cards_on_hand;
 public:
+	Hand() 
+	{
+		cards_on_hand.reserve(7);
+	}
+	// виртуальный деструктор
+	virtual ~Hand()
+	{
+		Clear();
+	}
 	// добавляет в коллекцию карт новую карту
 	void Add(Card* card)
 	{
@@ -170,6 +185,7 @@ public:
 	// очищает руку от карт
 	void Clear()
 	{
+		// вызывает runtime error (Debug Assertion Failed):
 		/*
 		for (auto card_ptr : cards_on_hand)
 		{
@@ -182,6 +198,14 @@ public:
 	// возвращает сумму очков карт руки
 	unsigned short GetValue() const
 	{
+		if (cards_on_hand.empty())
+			return 0;
+
+		//если первая карта имеет значение 0, то она лежит рубашкой вверх:
+        // вернуть значение 0
+		if (cards_on_hand[0]->getCardValue() == 0)
+			return 0;
+
 		unsigned short summ{ 0 };
 		size_t aces_on_hand{ 0 };
 		for (const auto& card_ptr : cards_on_hand)
@@ -206,9 +230,10 @@ public:
 class GenericPlayer : public Hand
 {
 protected:
-	string name;
+	string m_name;
 public:
-	GenericPlayer(const string& name_of_player): name{name_of_player} {}
+	GenericPlayer(const string& name_of_player = ""): m_name{name_of_player} {}
+	virtual ~GenericPlayer() {}
 	// возвращает информацию, нужна ли игроку еще одна карта
 	virtual bool isHitting() const = 0;
 	// возвращает bool значение, есть ли у игрока перебор
@@ -221,9 +246,101 @@ public:
 	void Bust() const
 	{
 		if (isBoosted())
-			cout << "У игрока " << name << " перебор!\n";
+			cout << "У игрока " << m_name << " перебор!\n";
 	}
+	friend std::ostream& operator<<(std::ostream&, const GenericPlayer&);
 };
+
+std::ostream& operator<<(std::ostream& os, const GenericPlayer& aGenericPlayer)
+{
+	os << aGenericPlayer.m_name << ":\t";
+
+	std::vector<Card*>::const_iterator pCard;
+	if (!aGenericPlayer.cards_on_hand.empty())
+	{
+		for (const auto pCard: aGenericPlayer.cards_on_hand)
+			os << *pCard << "\t";
+
+		if (aGenericPlayer.GetValue() != 0)
+			cout << "(" << aGenericPlayer.GetValue() << ")";
+	}
+	else
+		os << "<empty>";
+
+	return os;
+}
+
+class Player : public GenericPlayer
+{
+public:
+	Player(const string& name = "");
+
+	virtual ~Player();
+
+	// показывает, хочет ли игрок продолжать брать карты
+	virtual bool IsHitting() const;
+
+	// объявляет, что игрок победил
+	void Win() const;
+
+	// объявляет, что игрок проиграл
+	void Lose() const;
+
+	// объявляет ничью
+	void Push() const;
+};
+
+bool Player::IsHitting() const
+{
+	cout << m_name << ", хотите взять ещё одну карту? (Y/N): ";
+	char response;
+	cin >> response;
+	return (response == 'y' || response == 'Y');
+}
+
+void Player::Win() const
+{
+	cout << "Игрок " << m_name << " выиграл!\n";
+}
+
+void Player::Lose() const
+{
+	cout << "Игрок " << m_name << " проиграл.\n";
+}
+
+void Player::Push() const
+{
+	cout << "Игрок " << m_name << " сыграл вничью.\n";
+}
+
+class House : public GenericPlayer
+{
+private:
+	int limit = 16;
+public:
+	House(const string& name = "House");
+
+	virtual ~House();
+
+	// показывает, хочет ли дилер продолжать брать карты
+	virtual bool IsHitting() const;
+
+	// переворачивает первую карту
+	void FlipFirstCard();
+};
+
+bool House::IsHitting() const
+{
+	return (GetValue() <= limit);
+}
+
+void House::FlipFirstCard()
+{
+	if (!(cards_on_hand.empty()))
+		cards_on_hand[0]->flip();
+	else
+		cout << "Нет карт, которые можно перевернуть!\n";
+}
 
 int main()
 {
@@ -239,10 +356,10 @@ int main()
 	Card c3(Card::Clubs, Card::Ace);
 	cout << c3.printCard() << endl;
 
-	Card c4(Card::Spades, Card::Ace);
+	Card c4(Card::Spades, Card::Ace, true);
 	cout << c4.printCard() << endl;
 
-	Card c5(Card::Hearts, Card::Ace);
+	Card c5(Card::Hearts, Card::Ace, true);
 	cout << c5.printCard() << endl;
 
 	Hand someHand;
