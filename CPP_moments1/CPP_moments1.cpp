@@ -33,8 +33,10 @@ public:
 
 ostream& operator<<(ostream& out, const Person& person)
 {
-
-    out << person.m_name << " " << person.m_patronymic.value_or("") << " " << person.m_surname;
+    if (person.m_patronymic.has_value())
+        out << person.m_name << " " << person.m_patronymic.value() << " " << person.m_surname;
+    else
+        out << person.m_name << " " << person.m_surname;
     return out;
 }
 
@@ -69,7 +71,10 @@ public:
 
 ostream& operator<<(ostream& out, const PhoneNumber& phone)
 {
-    out << "+" << phone.m_country << "(" << phone.m_city << ")" << phone.m_number << " " << phone.m_add_number.value_or("");
+    if (phone.m_add_number.has_value())
+        out << "+" << phone.m_country << "(" << phone.m_city << ")" << phone.m_number << " " << phone.m_add_number.value();
+    else
+        out << "+" << phone.m_country << "(" << phone.m_city << ")" << phone.m_number;
     return out;
 }
 
