@@ -1,9 +1,11 @@
-﻿#include <iostream>
+﻿#include "Timer.h"      // для измерения времени выполнения кода. Внутри #include <iostream> 
 #include <vector>
-#include <algorithm>
-#include <utility>
+#include <algorithm>    // для библиотечных функций
+#include <utility>      // семантика перемещений при передаче указателя в вектор
 //#include <typeinfo>
-#include <iomanip>      // матированный вывод
+#include <iomanip>      // форматированный вывод
+#include <fstream>
+#include <string>
 
 using std::cout; using std::endl;
 
@@ -92,9 +94,112 @@ void task2()
     print_vector_values(pntrs);
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TASK-3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Подсчитайте количество гласных букв в книге “Война и мир”.
+// Для подсчета используйте 4 способа:
+//     count_if и find
+//     count_if и цикл for
+//     цикл for и find
+//     2 цикла for
+// Замерьте время каждого способа подсчета и сделайте выводы.
+
+using std::string;
+using std::ifstream;
+
+bool is_vowel_forMethod(const char letter, const string& vowels)
+{
+    for (const auto vwl : vowels)
+        if (letter == vwl)
+            return true;
+    return false;
+}
+
+bool is_vowel_findMethod(const char letter, const string& vowels)
+{
+    if (vowels.find(letter, 0) == string::npos)
+        return false;
+    return true;
+}
+
+// в двух следующих функциях нам понадобится указатель на одну из двух предыдущих функций
+typedef bool (*is_vowel_Fcn)(const char, const string&);
+
+size_t count_vowels_in_word_forMethod(const string& word, const string& vowels, is_vowel_Fcn chosen_fcn)
+{
+    size_t sum = 0;
+    for (const auto letter : word)
+        if (chosen_fcn(tolower(letter), vowels))
+            ++sum;
+    return sum;
+}
+
+size_t count_vowels_in_word_countIfMethod(const string& word, const string& vowels, is_vowel_Fcn chosen_fcn)
+{
+    return std::count_if(word.begin(), word.end(), [=](auto letter) 
+                       {return chosen_fcn(tolower(letter), vowels); });
+}
+
+void task3()
+{
+    cout << "\nTask3:" << endl;
+
+    ifstream file("War and peace.txt");
+
+    string vowels{ "aeiouy" };
+    string word;
+    size_t result_sum_vowels = 0;
+
+    Timer timer1("1) count_if and find");
+    while (file)
+    {
+        file >> word;
+        result_sum_vowels += count_vowels_in_word_countIfMethod(word, vowels, is_vowel_findMethod);
+    }
+    file.close();
+    timer1.print();
+    cout << result_sum_vowels << " vowels\n";
+
+    result_sum_vowels = 0;
+    file.open("War and peace.txt");
+    Timer timer2("2) count_if and for");
+    while (file)
+    {
+        file >> word;
+        result_sum_vowels += count_vowels_in_word_countIfMethod(word, vowels, is_vowel_forMethod);
+    }
+    file.close();
+    timer2.print();
+    cout << result_sum_vowels << " vowels\n";
+
+    result_sum_vowels = 0;
+    file.open("War and peace.txt");
+    Timer timer3("3) for and find");    // этот метод у меня даёт наименьшее время
+    while (file)
+    {
+        file >> word;
+        result_sum_vowels += count_vowels_in_word_forMethod(word, vowels, is_vowel_findMethod);
+    }
+    file.close();
+    timer3.print();
+    cout << result_sum_vowels << " vowels\n";
+
+    result_sum_vowels = 0;
+    file.open("War and peace.txt");
+    Timer timer4("4) for and for");
+    while (file)
+    {
+        file >> word;
+        result_sum_vowels += count_vowels_in_word_forMethod(word, vowels, is_vowel_forMethod);
+    }
+    file.close();
+    timer4.print();
+    cout << result_sum_vowels << " vowels\n";
+}
+
 int main()
 {
     task1();
     task2();
+    task3();
     return 0;
 }
