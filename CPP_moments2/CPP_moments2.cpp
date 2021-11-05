@@ -149,6 +149,7 @@ void task3()
     string word;
     size_t result_sum_vowels = 0;
 
+    //~~~~~~~~~~~~~~~~~~~~~~~COUNT_IF and FIND~~~~~~~~~~~~~~~~~~~~~~~
     Timer timer1("1) count_if and find");
     while (file)
     {
@@ -159,6 +160,7 @@ void task3()
     timer1.print();
     cout << result_sum_vowels << " vowels\n";
 
+    //~~~~~~~~~~~~~~~~~~~~~~~COUNT_IF and FOR~~~~~~~~~~~~~~~~~~~~~~~
     result_sum_vowels = 0;
     file.open("War and peace.txt");
     Timer timer2("2) count_if and for");
@@ -171,6 +173,7 @@ void task3()
     timer2.print();
     cout << result_sum_vowels << " vowels\n";
 
+    //~~~~~~~~~~~~~~~~~~~~~~~FOR and FIND~~~~~~~~~~~~~~~~~~~~~~~
     result_sum_vowels = 0;
     file.open("War and peace.txt");
     Timer timer3("3) for and find");    // этот метод у меня даёт наименьшее время
@@ -183,6 +186,7 @@ void task3()
     timer3.print();
     cout << result_sum_vowels << " vowels\n";
 
+    //~~~~~~~~~~~~~~~~~~~~~~~FOR and FOR~~~~~~~~~~~~~~~~~~~~~~~
     result_sum_vowels = 0;
     file.open("War and peace.txt");
     Timer timer4("4) for and for");
