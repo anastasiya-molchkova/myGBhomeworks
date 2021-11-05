@@ -139,65 +139,43 @@ size_t count_vowels_in_word_countIfMethod(const string& word, const string& vowe
                        {return chosen_fcn(tolower(letter), vowels); });
 }
 
-void task3()
+typedef size_t (*count_vowels_in_word_Fcn)(const string&, const string&, is_vowel_Fcn);
+
+void method_test(const string& filename, const string& method_name, count_vowels_in_word_Fcn method_for_count, is_vowel_Fcn method_if_vowel)
 {
-    cout << "\nTask3:" << endl;
-
-    ifstream file("War and peace.txt");
-
-    string vowels{ "aeiouy" };
+    const string vowels{ "aeiouy" };
+    ifstream file(filename);
     string word;
     size_t result_sum_vowels = 0;
 
-    //~~~~~~~~~~~~~~~~~~~~~~~COUNT_IF and FIND~~~~~~~~~~~~~~~~~~~~~~~
-    Timer timer1("1) count_if and find");
+    Timer timer(method_name);
     while (file)
     {
         file >> word;
-        result_sum_vowels += count_vowels_in_word_countIfMethod(word, vowels, is_vowel_findMethod);
+        result_sum_vowels += method_for_count(word, vowels, method_if_vowel);
     }
     file.close();
-    timer1.print();
+    timer.print();
+
     cout << result_sum_vowels << " vowels\n";
+}
+
+void task3()
+{
+    cout << "\nTask3:" << endl;
+    string file_name{ "War and peace.txt" };
+
+    //~~~~~~~~~~~~~~~~~~~~~~~COUNT_IF and FIND~~~~~~~~~~~~~~~~~~~~~~~
+    method_test(file_name, "1) count_if and find", count_vowels_in_word_countIfMethod, is_vowel_findMethod);
 
     //~~~~~~~~~~~~~~~~~~~~~~~COUNT_IF and FOR~~~~~~~~~~~~~~~~~~~~~~~
-    result_sum_vowels = 0;
-    file.open("War and peace.txt");
-    Timer timer2("2) count_if and for");
-    while (file)
-    {
-        file >> word;
-        result_sum_vowels += count_vowels_in_word_countIfMethod(word, vowels, is_vowel_forMethod);
-    }
-    file.close();
-    timer2.print();
-    cout << result_sum_vowels << " vowels\n";
+    method_test(file_name, "2) count_if and for", count_vowels_in_word_countIfMethod, is_vowel_forMethod);
 
     //~~~~~~~~~~~~~~~~~~~~~~~FOR and FIND~~~~~~~~~~~~~~~~~~~~~~~
-    result_sum_vowels = 0;
-    file.open("War and peace.txt");
-    Timer timer3("3) for and find");    // этот метод у меня даёт наименьшее время
-    while (file)
-    {
-        file >> word;
-        result_sum_vowels += count_vowels_in_word_forMethod(word, vowels, is_vowel_findMethod);
-    }
-    file.close();
-    timer3.print();
-    cout << result_sum_vowels << " vowels\n";
+    method_test(file_name, "3) for and find", count_vowels_in_word_forMethod, is_vowel_findMethod);
 
     //~~~~~~~~~~~~~~~~~~~~~~~FOR and FOR~~~~~~~~~~~~~~~~~~~~~~~
-    result_sum_vowels = 0;
-    file.open("War and peace.txt");
-    Timer timer4("4) for and for");
-    while (file)
-    {
-        file >> word;
-        result_sum_vowels += count_vowels_in_word_forMethod(word, vowels, is_vowel_forMethod);
-    }
-    file.close();
-    timer4.print();
-    cout << result_sum_vowels << " vowels\n";
+    method_test(file_name, "4) for and for", count_vowels_in_word_forMethod, is_vowel_forMethod);
 }
 
 int main()
