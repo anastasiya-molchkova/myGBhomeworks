@@ -91,29 +91,105 @@ void task2()  // определители для матриц были пров�
     std::cout << "\nTASK 2:\n";
 
     Matrix m1(1, { { 5 } });
-    std::cout << "m1:\n";
+    std::cout << "M1:\n";
     m1.print();
-    std::cout << "det(m1) = " << m1.det() << std::endl;
+    std::cout << "det(M1) = " << m1.det() << std::endl;
 
     Matrix m2(2, { { 1 , 2}, {3, 4} });
-    std::cout << "m2:\n";
+    std::cout << "M2:\n";
     m2.print();
-    std::cout << "det(m2) = " << m2.det() << std::endl;
+    std::cout << "det(M2) = " << m2.det() << std::endl;
 
     Matrix m3(3, { { 1, 2, 3}, {4, -2, -3}, {-1, 10, 1 } });
-    std::cout << "m3:\n";
+    std::cout << "M3:\n";
     m3.print();
-    std::cout << "det(m3) = " << m3.det() << std::endl;
+    std::cout << "det(M3) = " << m3.det() << std::endl;
 
     Matrix m4(4, { { 1, -2, 3, 4}, {-3, -2, 2, 10}, {-1, 10, 4, -3 }, {2, -1, 1, -2} });
-    std::cout << "m4:\n";
+    std::cout << "M4:\n";
     m4.print();
-    std::cout << "det(m4) = " << m4.det() << std::endl;
+    std::cout << "det(M4) = " << m4.det() << std::endl;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TASK 3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Реализовать собственный класс итератора, с помощью которого можно будет 
+// проитерироваться по диапазону целых чисел в цикле for-range-based.
+
+class Iterated_int
+{
+private:
+    int* iterator;
+    size_t size = 0;
+    std::vector<int> array;
+public:
+    Iterated_int(const size_t capacity): size(capacity), array{}, iterator(&array[0])
+    {
+        array.reserve(size);
+    }
+    Iterated_int(const std::vector<int>& numbers) : size(numbers.size()), array{numbers}, iterator(&array[0])
+    {}
+    void add(const int element)
+    {
+        array.push_back(element);
+        ++size;
+    }
+    int get(const size_t index) const
+    {
+        return array.at(index);
+    }
+    void del(const size_t index)
+    {
+        array.erase(array.begin()+index);
+        --size;
+    }
+    int* begin()
+    {
+        return &array[0];
+    }
+    int* end()
+    {
+        // !!! здесь ругается "cannot seek value-initialiized vector itarator"
+        //return iterator+size;
+        // !!! а так ругается на "vector itarators incompatible"
+        //return array.end();
+        // !!! а так ругается на "vector subscript out of range"
+        //return &array[size];
+    }
+    void operator++()
+    {
+        ++iterator;
+    }
+    int& operator*()
+    {
+        return *iterator;
+    }
+    void print() const
+    {
+        for (const auto element : array)
+            std::cout << element << "  ";
+        std::cout << std::endl;
+    }
+};
+
+void task3()
+{
+    std::cout << "\nTASK 3:\n";
+    Iterated_int data({ 3, -4, 13, 34, 23, 32, 11 });
+    std::cout << "Initial data: ";
+    data.print();
+
+    // !!! дальше возникает run time error при попытке получить data.end()
+    for (auto el : data)
+        el *= 2;
+    std::cout << "Doubled data: ";
+    data.print();
+
 }
 
 int main()
 {
     task1();
     task2();
+    task3();
     return 0;
 }
