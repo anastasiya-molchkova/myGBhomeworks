@@ -79,9 +79,9 @@ void task2()
 
 	std::cout << "\nError = ";
 	std::vector<double> error_vector(size);
-	// !!! здесь не знаю, как сделать, чтобы в каждое значение вектора ошибки записывался результат функции над двумя векторами:
-	std::transform(analog_signal.begin(), analog_signal.end(), error_vector.begin(), 
-					[](double value) { return pow(value - static_cast<int>(value), 2); });
+	// !!! это работает, но мне не ясно, почему:
+	std::transform(analog_signal.begin(), analog_signal.end(), digital_signal.begin(), error_vector.begin(),
+					[](double analog_value, int digital_value) { return pow(analog_value - digital_value, 2); });
 	std::cout << std::accumulate(error_vector.begin(), error_vector.end(), 0.0) << "\n" << std::endl;
 }
 
