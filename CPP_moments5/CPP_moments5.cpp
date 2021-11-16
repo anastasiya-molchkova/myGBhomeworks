@@ -3,6 +3,8 @@
 #include <deque>
 #include <list>
 #include <set>
+#include <string>
+#include <map>
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TASK-1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /*  Создать шаблонную функцию, которая принимает итераторы на начало и конец последовательности слов, 
@@ -42,8 +44,51 @@ void task1()
     std::cout << std::endl;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TASK-2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/*  Используя ассоциативный контейнер, напишите программу, 
+    которая будет считывать данные введенные пользователем из стандартного потока ввода 
+    и разбивать их на предложения. 
+    Далее программа должна вывести пользователю все предложения, отсортировав их по длине. */
+
+std::multimap<size_t, std::string> split_by_sentences(const std::string& text)
+{
+    std::multimap<size_t, std::string> sentences;
+    std::string sentence{};
+    for (const char c : text)
+    {
+        if (sentence.empty() && c == ' '); // игнорируем первый пробел в предложении
+        else 
+            sentence += c;
+        if ((c == '.') || (c == '?') || (c == '!'))            // конец предложения
+        {
+            // !!! Почему-то добавляет все предложения, даже повторяющиеся (когда такие пары ключ-значение уже есть... 
+            sentences.insert({sentence.length(), sentence});   // добавляем в словарь
+            sentence = "";                                     // начинаем заново
+        }
+    }
+    return sentences;
+}
+
+void print_ordered_sentences(const std::multimap<size_t, std::string>& sentences)
+{
+    for (const auto& [length, sentence] : sentences)
+        std::cout << length << ": " << sentence << "\n";
+}
+
+void task2()
+{
+    std::cout << "TASK 2\n";
+    std::cout << "Please input a text:\n";
+    std::string text;
+    std::getline(std::cin, text);
+
+    std::cout << "\nUnique ordered sentences from your text:\n";
+    print_ordered_sentences(split_by_sentences(text));
+}
+
 int main()
 {
     task1();
+    task2();
     return 0;
 }
